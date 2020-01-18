@@ -1,0 +1,11 @@
+repositories {
+    jcenter()
+    mavenCentral()
+}
+
+dependencies {
+    implementation group: 'org.apache.wicket', name: 'wicket', version: "latest.integration", {
+        exclude group: "org.junit.jupiter", module: "junit-jupiter-engine"
+    }
+    runtime group: 'org.slf4j', name: 'slf4j-simple', version: 'latest.integration'
+}

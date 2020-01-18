@@ -1,0 +1,11 @@
+plugins {
+    id "org.gretty" version "3.0.1"
+}
+
+def inc(module) {
+    apply from: "${projectDir}/gradle/${module}.gradle"
+}
+
+inc('version')
+inc('project')
+inc('dependencies')

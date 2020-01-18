@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<html
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:wicket="http://wicket.apache.org"
+    class="fontFeatures unicodeWebFonts solarizedLight"
+>
+    <wicket:head>
+        <title>My first Wicket web application</title>
+        <wicket:link>
+            <link rel="stylesheet" type="text/css" href="style.css"/>
+        </wicket:link>
+    </wicket:head>
+    <body>
+        <header>
+            <nav>
+                <a wicket:id="home">home</a>
+            </nav>
+            <small>GenealDB (the genealogy research database)</small>
+            <hr/>
+        </header>
+        <wicket:child/>
+        <footer>
+            <hr/>
+            <small>This page generated at: <wicket:container wicket:id="timeStamp" id="timeStamp"/>.</small>
+        </footer>
+    </body>
+</html>

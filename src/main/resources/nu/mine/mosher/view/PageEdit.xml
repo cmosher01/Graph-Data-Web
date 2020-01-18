@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wicket:extend xmlns="http://www.w3.org/1999/xhtml" xmlns:wicket="http://wicket.apache.org">
+    <h3 wicket:id="entity"/>
+    <form wicket:id="form">
+        <ul>
+            <li wicket:id="properties">
+                <label wicket:id="label">
+                    <wicket:container wicket:id="name"/>:
+                    <input wicket:id="property"/>
+                </label>
+            </li>
+        </ul>
+        <ul>
+            <li wicket:id="refsMultiple">
+                <wicket:container wicket:id="name"/>:
+                <ul>
+                    <li wicket:id="ref">
+<!--                        <a wicket:id="link">-->
+                            <span wicket:id="display"/>
+<!--                        </a>-->
+<!--                        <a wicket:id="remove">{unlink}</a>-->
+                </li>
+<!--                    <span wicket:id="empty"/>-->
+                    <li>
+                        <a wicket:id="add">{link}</a>
+                    </li>
+                </ul>
+            </li>
+            <li wicket:id="refsSingular">
+                <wicket:container wicket:id="name"/>:
+                <a wicket:id="link">
+                    <span wicket:id="display"/>
+                </a>
+                <span wicket:id="empty"/>
+                <a wicket:id="add">{link}</a>
+                <a wicket:id="remove">{unlink}</a>
+            </li>
+        </ul>
+        <p>
+            <a wicket:id="save">{save}</a>
+            <a wicket:id="cancel">{cancel}</a>
+            <a wicket:id="delete">{delete}</a>
+        </p>
+    </form>
+</wicket:extend>

@@ -1,0 +1,7 @@
+apply plugin: WarPlugin
+
+group = 'nu.mine.mosher'
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_11
+}

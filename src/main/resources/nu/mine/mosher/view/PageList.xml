@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wicket:extend xmlns="http://www.w3.org/1999/xhtml" xmlns:wicket="http://wicket.apache.org">
+    <h3 wicket:id="entity"/>
+    <ul>
+        <li wicket:id="list">
+            <a wicket:id="link">
+                <span wicket:id="display"/>
+            </a>
+        </li>
+    </ul>
+    <span wicket:id="empty"/>
+    <p>
+        <a wicket:id="new">{new}</a>
+    </p>
+</wicket:extend>
