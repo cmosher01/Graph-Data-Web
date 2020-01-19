@@ -2,7 +2,7 @@ package nu.mine.mosher.view;
 
 import nu.mine.mosher.app.App;
 import nu.mine.mosher.store.Store;
-import nu.mine.mosher.util.Props;
+import nu.mine.mosher.util.*;
 import org.apache.wicket.Application;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.link.Link;
@@ -12,13 +12,17 @@ import org.apache.wicket.model.*;
 import java.io.Serializable;
 import java.util.*;
 
+@SuppressWarnings({"unchecked", "rawtypes"})
 public class PageChoose extends BasePage {
+    private final Serializable parent;
+    private final Props.Ref ref;
+
     public PageChoose(Serializable entity, Props.Ref ref, List candidates) {
         this.parent = entity;
         this.ref = ref;
         add(new Label("entity", ref.name));
         add(new ListEntity(candidates));
-        add(new Label("empty", Model.of("[none]")).setVisible(store().count(ref.cls) == 0));
+        add(new Label("empty", Model.of("[none]")).setVisible(store().count(ref.cls) == 0L));
 //        add(new LinkNew());
     }
 
@@ -39,7 +43,7 @@ public class PageChoose extends BasePage {
             public LinkEntity(final Object entity) {
                 super("link");
                 this.entity = entity;
-                add(new Label("display", new PropertyModel<>(entity, "display")));
+                add(new Label("display", Utils.str(entity)));
             }
 
             @Override
@@ -49,8 +53,7 @@ public class PageChoose extends BasePage {
                 } else {
                     new PropertyModel<>(parent, ref.name).setObject(entity);
                 }
-                final Long idParent = (Long)new PropertyModel<>(parent, "id").getObject();
-                setResponsePage(new PageEdit(parent.getClass(), idParent));
+                setResponsePage(new PageEdit(parent));
             }
         }
     }
@@ -68,8 +71,6 @@ public class PageChoose extends BasePage {
 //    }
 
 
-    private final Object parent;
-    private final Props.Ref ref;
 
     private static Store store() {
         return ((App)Application.get()).store();

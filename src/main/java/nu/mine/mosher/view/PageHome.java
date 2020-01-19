@@ -1,23 +1,22 @@
 package nu.mine.mosher.view;
 
 
-import nu.mine.mosher.app.App;
-import nu.mine.mosher.model.Models;
-import org.apache.wicket.Application;
+import nu.mine.mosher.app.sample.model.Models;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.markup.html.list.*;
-import org.apache.wicket.model.*;
+import org.apache.wicket.model.PropertyModel;
 
 import java.util.List;
 
 
+@SuppressWarnings({"rawtypes"})
 public class PageHome extends BasePage {
     public PageHome() {
         add(new ListEntity());
     }
 
-    private final class ListEntity extends ListView<Class> {
+    private static final class ListEntity extends ListView<Class> {
         public ListEntity() {
             super("list", entities());
         }
@@ -27,7 +26,7 @@ public class PageHome extends BasePage {
             item.add(new LinkEntity(item.getModelObject()));
         }
 
-        private final class LinkEntity extends Link<Void> {
+        private static final class LinkEntity extends Link<Void> {
             private final Class cls;
             public LinkEntity(final Class cls) {
                 super("link");

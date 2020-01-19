@@ -1,6 +1,6 @@
-package nu.mine.mosher.model;
+package nu.mine.mosher.app.sample.model;
 
-import java.util.*;
+import java.util.Set;
 
 public class Models {
     private static final Set<Class> entities = Set.of(Event.class, Persona.class, Role.class);

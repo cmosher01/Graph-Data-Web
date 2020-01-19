@@ -7,10 +7,12 @@ import org.apache.wicket.Application;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.markup.html.list.*;
-import org.apache.wicket.model.*;
+import org.apache.wicket.model.Model;
 
+import java.io.Serializable;
 import java.util.*;
 
+@SuppressWarnings({"rawtypes", "unchecked"})
 public class PageList extends BasePage {
     private final Class cls;
 
@@ -18,7 +20,7 @@ public class PageList extends BasePage {
         this.cls = Objects.requireNonNull(cls);
         add(new Label("entity", cls.getSimpleName()));
         add(new ListEntity());
-        add(new Label("empty", Model.of("[none]")).setVisible(store().count(cls) == 0));
+        add(new Label("empty", Model.of("[none]")).setVisible(store().count(cls) == 0L));
         add(new LinkNew());
     }
 
@@ -31,27 +33,27 @@ public class PageList extends BasePage {
         return all;
     }
 
-    private final class ListEntity extends PropertyListView {
+    private final class ListEntity extends PropertyListView<Serializable> {
         public ListEntity() {
             super("list", getAll());
         }
 
         @Override
         protected void populateItem(final ListItem item) {
-            item.add(new LinkEntity(item.getModelObject()));
+            item.add(new LinkEntity((Serializable)item.getModelObject()));
         }
 
         private final class LinkEntity extends Link<Void> {
-            private final Long id;
-            public LinkEntity(final Object entity) {
+            private final Serializable entity;
+            public LinkEntity(final Serializable entity) {
                 super("link");
-                id = (Long)new PropertyModel<>(entity, "id").getObject();
-                add(new Label("display", new PropertyModel<>(entity, "display")));
+                this.entity = entity;
+                add(new Label("display", entity.toString()));
             }
 
             @Override
             public void onClick() {
-                setResponsePage(new PageEdit(cls, id));
+                setResponsePage(new PageEdit(entity));
             }
         }
     }
@@ -63,7 +65,7 @@ public class PageList extends BasePage {
 
         @Override
         public void onClick() {
-            setResponsePage(new PageEdit(cls, 0L));
+            setResponsePage(new PageEdit(store().load(cls, 0L)));
         }
     }
 

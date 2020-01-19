@@ -1,6 +1,6 @@
 package nu.mine.mosher.app;
 
-import nu.mine.mosher.model.Models;
+import nu.mine.mosher.app.sample.model.Models;
 import nu.mine.mosher.store.Store;
 import nu.mine.mosher.util.Props;
 import nu.mine.mosher.view.PageHome;

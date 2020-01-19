@@ -1,36 +1,85 @@
 package nu.mine.mosher.store;
 
-import nu.mine.mosher.model.Models;
-import org.apache.wicket.model.PropertyModel;
+import org.neo4j.graphdb.GraphDatabaseService;
+import org.neo4j.graphdb.factory.GraphDatabaseFactory;
+import org.neo4j.ogm.config.Configuration;
+import org.neo4j.ogm.drivers.embedded.driver.EmbeddedDriver;
+import org.neo4j.ogm.session.*;
 
-import java.io.Serializable;
+import java.io.*;
 import java.util.*;
 
+@SuppressWarnings({"rawtypes", "unchecked"})
 public class Store {
+    private final SessionFactory factorySession;
+
     public Store(final Set<Class> entities) {
         // TODO check to ensure all are Serializable, etc.
-        entities.forEach(e -> store.put(e, new StoreEntity(e)));
+//        entities.forEach(e -> verify(e));
+
+        // Neo4j 4.0:
+//        final DatabaseManagementService dbms;
+//        try {
+//            dbms = new DatabaseManagementServiceBuilder(new File("./run/data").getCanonicalFile()).build();
+//        } catch (IOException e) {
+//            throw new IllegalArgumentException(e);
+//        }
+//        Runtime.getRuntime().addShutdownHook(new Thread(dbms::shutdown));
+//        try {
+//            dbms.createDatabase(DEFAULT_DATABASE_NAME);
+//        } catch (final Throwable e) {
+//            // OK
+//        }
+//        final GraphDatabaseService db = dbms.database(DEFAULT_DATABASE_NAME);
+
+
+        final GraphDatabaseService db = new GraphDatabaseFactory().
+            newEmbeddedDatabaseBuilder(new File("database")).
+            newGraphDatabase();
+
+        final Configuration configuration = new Configuration.Builder().build();
+        final EmbeddedDriver driver = new EmbeddedDriver(db, configuration);
+        this.factorySession = new SessionFactory(driver, "nu.mine.mosher.app.sample.model");
     }
 
 
 
-
-    public int count(final Class cls) {
-        return store(cls).getSize();
+    public long count(final Class cls) {
+        final Session session = this.factorySession.openSession();
+        return session.countEntitiesOfType(cls);
     }
 
     public List getAll(final Class cls) {
-        return store(cls).getAll();
+        final Session session = this.factorySession.openSession();
+        return List.copyOf(session.loadAll(cls, 1));
     }
 
-    public Serializable load(final Class cls, final long id) {
-        if (id == 0L && Models.isEntity(cls)) {
+    public Serializable load(final Class cls, final Long id) {
+        if (id == 0L) {
             return create(cls);
         }
-        return store(cls).get(id);
+        final Session session = this.factorySession.openSession();
+        return (Serializable)session.load(cls, id, 1);
     }
 
-    private Serializable create(final Class cls) {
+    public void save(final Serializable entity) {
+        final Session session = this.factorySession.openSession();
+        try {
+            session.save(entity, 1);
+        } catch (RuntimeException e) {
+            System.out.println("This will happen when an edge has a null reference to a node");
+            e.printStackTrace();
+        }
+    }
+
+    public void delete(final Serializable entity) {
+        final Session session = this.factorySession.openSession();
+        session.delete(entity);
+    }
+
+
+
+    private static Serializable create(final Class cls) {
         try {
             return (Serializable)Arrays.
                 stream(cls.getDeclaredConstructors()).
@@ -41,76 +90,5 @@ public class Store {
         } catch (final Throwable e) {
             throw new IllegalStateException(e);
         }
-    }
-
-    public void save(final Serializable entity) {
-        store(entity.getClass()).save(entity);
-    }
-
-    public void delete(final Class cls, final long id) {
-        store(cls).delete(id);
-    }
-
-
-
-
-
-
-
-
-
-
-
-
-    private StoreEntity store(final Class cls) {
-        return Optional.ofNullable(this.store.get(cls)).orElseThrow();
-    }
-
-    private final Map<Class, StoreEntity> store = new HashMap<>();
-
-    private static class StoreEntity {
-        private final Class type;
-        private long id;
-        private final Map<Long, Serializable> store = new HashMap<>();
-
-        public StoreEntity(final Class type) {
-            this.type = type;
-        }
-
-        public int getSize() {
-            return this.store.size();
-        }
-
-        public ArrayList getAll() {
-            return new ArrayList(this.store.values());
-        }
-
-        public Serializable get(final long id) {
-            return Optional.ofNullable(this.store.get(id)).orElseThrow();
-        }
-
-        public synchronized long createId() {
-            return ++this.id;
-        }
-
-        public void delete(final long id) {
-            if (id != 0L) {
-                this.store.remove(id);
-            }
-        }
-
-        public void save(final Serializable entity) {
-            final PropertyModel<Long> propID = PropertyModel.of(entity, "id");
-            Long id = propID.getObject();
-            if (Objects.isNull(id) || id == 0L) {
-                id =createId();
-                propID.setObject(id);
-            }
-            this.store.put(id, entity);
-        }
-
-//    public void dump() {
-//        this.storePersona.values().stream().map(p -> ""+p.getId()+": "+p.getDescription()).forEach(System.out::println);
-//    }
     }
 }

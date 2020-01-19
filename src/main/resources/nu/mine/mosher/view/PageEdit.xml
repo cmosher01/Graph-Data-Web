@@ -20,7 +20,7 @@
 <!--                        </a>-->
 <!--                        <a wicket:id="remove">{unlink}</a>-->
                 </li>
-<!--                    <span wicket:id="empty"/>-->
+                    <span wicket:id="empty"/>
                     <li>
                         <a wicket:id="add">{link}</a>
                     </li>

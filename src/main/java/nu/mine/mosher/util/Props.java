@@ -20,6 +20,7 @@ import java.util.stream.*;
  * TODO: handle Optional<> ?
  *
  */
+@SuppressWarnings("rawtypes")
 public final class Props {
     private final Set<Class> entities;
 

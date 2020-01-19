@@ -2,44 +2,43 @@ package nu.mine.mosher.view;
 
 import nu.mine.mosher.app.App;
 import nu.mine.mosher.store.Store;
-import nu.mine.mosher.util.Props;
+import nu.mine.mosher.util.*;
 import org.apache.wicket.*;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.*;
-import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.markup.html.list.*;
 import org.apache.wicket.model.*;
 
 import java.io.Serializable;
 import java.util.*;
 
+@SuppressWarnings({"rawtypes", "unchecked"})
 public class PageEdit extends BasePage {
-    private final Class cls;
-    private final long id;
+    private final Serializable entity;
 
-    public PageEdit(Class cls, long id) {
-        this.cls = cls;
-        this.id = id;
-        add(new Label("entity", cls.getSimpleName()));
+    public PageEdit(final Serializable entity) {
+        this.entity = entity;
+//        this.cls = entity.getClass();
+//        this.id = (Long)new PropertyModel<>(entity, "id").getObject();
+        add(new Label("entity", entity.getClass().getSimpleName()));
         add(new FormEntity());
     }
 
     private final class FormEntity extends Form<Serializable> {
         public FormEntity() {
-            super("form", Model.of(store().load(cls, id)));
+            super("form", Model.of(entity));
 
 
 
 
 
-            add(new ListView<>("properties", props().properties(cls)) {
+            add(new ListView<>("properties", props().properties(entity.getClass())) {
                 @Override
                 protected void populateItem(final ListItem<String> item) {
                     final String sPropName = item.getModelObject();
 
                     final Component name = new Label("name", sPropName).setRenderBodyOnly(true);
 
-                    final Serializable entity = FormEntity.this.getModelObject();
                     final PropertyModel model = new PropertyModel<>(entity, sPropName);
                     final LabeledWebMarkupContainer property = new TextField<String>("property", model);
 
@@ -55,7 +54,7 @@ public class PageEdit extends BasePage {
 
 
 
-            add(new ListView<>("refsMultiple", props().refsMultiple(cls)) {
+            add(new ListView<>("refsMultiple", props().refsMultiple(entity.getClass())) {
                 @Override
                 protected void populateItem(final ListItem<Props.Ref> item) {
                     final Props.Ref ref = item.getModelObject();
@@ -63,8 +62,6 @@ public class PageEdit extends BasePage {
 
                     final Component name = new Label("name", sPropName).setRenderBodyOnly(true);
                     item.add(name);
-
-                    final Serializable entity = FormEntity.this.getModelObject();
 
                     final Collection referents = (Collection)new PropertyModel<>(entity, sPropName).getObject();
                     item.add(new ReferenceListView(entity, sPropName, referents));
@@ -89,8 +86,9 @@ public class PageEdit extends BasePage {
 
                     @Override
                     protected void populateItem(final ListItem item) {
-                        item.add(new Label("display", item.getModelObject().toString()));
-                        // implement "remove" link
+                        // TODO link
+                        item.add(new Label("display", Utils.str(item.getModelObject())));
+                        // TODO implement "remove" link
                     }
                 }
             });
@@ -99,7 +97,7 @@ public class PageEdit extends BasePage {
 
 
 
-            add(new ListView<>("refsSingular", props().refsSingular(cls)) {
+            add(new ListView<>("refsSingular", props().refsSingular(entity.getClass())) {
                 @Override
                 protected void populateItem(final ListItem<Props.Ref> item) {
                     final Props.Ref ref = item.getModelObject();
@@ -108,9 +106,7 @@ public class PageEdit extends BasePage {
                     final Component name = new Label("name", sPropName).setRenderBodyOnly(true);
                     item.add(name);
 
-                    final Serializable entity = FormEntity.this.getModelObject();
-
-                    final Object referent = new PropertyModel<>(entity, sPropName).getObject();
+                    final Serializable referent = (Serializable)new PropertyModel<>(entity, sPropName).getObject();
 
                     item.add(new LinkEntity(referent).setVisible(Objects.nonNull(referent)));
                     item.add(new Label("empty", Model.of("[none]")).setVisible(Objects.isNull(referent)));
@@ -133,21 +129,23 @@ public class PageEdit extends BasePage {
                 }
 
                 final class LinkEntity extends SubmitLink {
-                    private Long id;
-                    private Class cls;
-                    public LinkEntity(final Object entity) {
+//                    private Long id;
+//                    private Class cls;
+                    private final Serializable referent;
+                    public LinkEntity(final Serializable referent) {
                         super("link");
-                        if (Objects.nonNull(entity)) {
-                            id = (Long)new PropertyModel<>(entity, "id").getObject();
-                            cls = entity.getClass();
-                        }
-                        add(new Label("display", new PropertyModel<>(entity, "display")));
+                        this.referent = referent;
+//                        if (Objects.nonNull(entity)) {
+//                            id = (Long)new PropertyModel<>(entity, "id").getObject();
+//                            cls = entity.getClass();
+//                        }
+                        add(new Label("display", Utils.str(referent)));
                     }
 
                     @Override
                     public void onSubmit() {
                         save();
-                        setResponsePage(new PageEdit(cls, id));
+                        setResponsePage(new PageEdit(referent));
                     }
                 }
             });
@@ -159,7 +157,7 @@ public class PageEdit extends BasePage {
             add(new SubmitLink("delete") {
                 @Override
                 public void onSubmit() {
-                    store().delete(cls, id);
+                    store().delete(entity);
                     next();
                 }
             }.setDefaultFormProcessing(false));
@@ -179,14 +177,13 @@ public class PageEdit extends BasePage {
         }
 
         private void save() {
-            store().save(FormEntity.this.getModelObject());
+            store().save(entity);
         }
 
         private void next() {
-            setResponsePage(new PageList(cls));
+            setResponsePage(new PageList(entity.getClass()));
         }
     }
-
 
     private static Store store() {
         return ((App)Application.get()).store();
