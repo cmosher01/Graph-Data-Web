@@ -2,6 +2,7 @@ package nu.mine.mosher.app.sample.model;
 
 import java.util.Set;
 
+@SuppressWarnings({"rawtypes", "unchecked"})
 public class Models {
     private static final Set<Class> entities = Set.of(Event.class, Persona.class, Role.class);
 

@@ -3,11 +3,12 @@ package nu.mine.mosher.view;
 import nu.mine.mosher.app.App;
 import nu.mine.mosher.app.sample.Sample;
 import nu.mine.mosher.store.Store;
-import org.apache.wicket.Application;
+import org.apache.wicket.*;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.markup.html.list.*;
 import org.apache.wicket.model.Model;
+import org.apache.wicket.protocol.http.WebSession;
 
 import java.io.Serializable;
 import java.util.*;
@@ -20,22 +21,22 @@ public class PageList extends BasePage {
         this.cls = Objects.requireNonNull(cls);
         add(new Label("entity", cls.getSimpleName()));
         add(new ListEntity());
-        add(new Label("empty", Model.of("[none]")).setVisible(store().count(cls) == 0L));
+        add(new Label("empty", Model.of("[none]")).setVisible(store().count(cls, Session.get().getId()) == 0L));
         add(new LinkNew());
     }
 
-    private List getAll() {
-        List all = store().getAll(cls);
+    private Collection getAll() {
+        Collection all = store().getAll(cls, Session.get().getId());
         if (all.isEmpty()) {
             Sample.create((App)Application.get());
-            all = store().getAll(cls);
+            all = store().getAll(cls, Session.get().getId());
         }
         return all;
     }
 
     private final class ListEntity extends PropertyListView<Serializable> {
         public ListEntity() {
-            super("list", getAll());
+            super("list", Collections.list(Collections.enumeration(getAll())));
         }
 
         @Override
@@ -65,7 +66,7 @@ public class PageList extends BasePage {
 
         @Override
         public void onClick() {
-            setResponsePage(new PageEdit(store().load(cls, 0L)));
+            setResponsePage(new PageEdit(Store.create(cls)));
         }
     }
 

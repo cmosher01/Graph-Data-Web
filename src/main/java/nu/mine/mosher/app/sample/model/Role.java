@@ -1,5 +1,6 @@
 package nu.mine.mosher.app.sample.model;
 
+import nu.mine.mosher.util.Utils;
 import org.neo4j.ogm.annotation.*;
 
 import java.io.Serializable;
@@ -16,6 +17,6 @@ public class Role implements Serializable {
 
     @Override
     public String toString() {
-        return "-"+this.description+"-";
+        return "persona "+Utils.str(persona)+" had role "+description+" in event "+Utils.str(event);
     }
 }

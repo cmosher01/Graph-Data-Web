@@ -14,6 +14,6 @@ public class Persona implements Serializable {
 
     @Override
     public String toString() {
-        return "<"+this.description+">";
+        return "persona "+this.description;
     }
 }

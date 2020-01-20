@@ -3,13 +3,14 @@ package nu.mine.mosher.view;
 import nu.mine.mosher.app.App;
 import nu.mine.mosher.store.Store;
 import nu.mine.mosher.util.*;
-import org.apache.wicket.Application;
+import org.apache.wicket.*;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.markup.html.list.*;
 import org.apache.wicket.model.*;
 
 import java.io.Serializable;
+import java.nio.file.attribute.UserDefinedFileAttributeView;
 import java.util.*;
 
 @SuppressWarnings({"unchecked", "rawtypes"})
@@ -17,20 +18,20 @@ public class PageChoose extends BasePage {
     private final Serializable parent;
     private final Props.Ref ref;
 
-    public PageChoose(Serializable entity, Props.Ref ref, List candidates) {
+    public PageChoose(Serializable entity, Props.Ref ref, Collection candidates) {
         this.parent = entity;
         this.ref = ref;
         add(new Label("entity", ref.name));
         add(new ListEntity(candidates));
-        add(new Label("empty", Model.of("[none]")).setVisible(store().count(ref.cls) == 0L));
+        add(new Label("empty", Model.of("[none]")).setVisible(store().count(ref.cls, Session.get().getId()) == 0L));
 //        add(new LinkNew());
     }
 
 
 
     private final class ListEntity extends PropertyListView {
-        public ListEntity(List candidates) {
-            super("list", candidates);
+        public ListEntity(Collection candidates) {
+            super("list", Collections.list(Collections.enumeration(candidates)));
         }
 
         @Override

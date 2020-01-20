@@ -8,6 +8,7 @@ import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.*;
 import org.apache.wicket.markup.html.list.*;
 import org.apache.wicket.model.*;
+import org.apache.wicket.protocol.http.WebSession;
 
 import java.io.Serializable;
 import java.util.*;
@@ -70,7 +71,7 @@ public class PageEdit extends BasePage {
                     item.add(new SubmitLink("add") {
                         @Override
                         public void onSubmit() {
-                            setResponsePage(new PageChoose(entity, ref, store().getAll(ref.cls)));
+                            setResponsePage(new PageChoose(entity, ref, store().getAll(ref.cls, Session.get().getId())));
                         }
                     });
                 }
@@ -107,6 +108,7 @@ public class PageEdit extends BasePage {
                     item.add(name);
 
                     final Serializable referent = (Serializable)new PropertyModel<>(entity, sPropName).getObject();
+                    // TODO how to handle if referent is a relation (edge) type?
 
                     item.add(new LinkEntity(referent).setVisible(Objects.nonNull(referent)));
                     item.add(new Label("empty", Model.of("[none]")).setVisible(Objects.isNull(referent)));
@@ -115,7 +117,7 @@ public class PageEdit extends BasePage {
                         @Override
                         public void onSubmit() {
                             save();
-                            setResponsePage(new PageChoose(entity, ref, store().getAll(ref.cls)));
+                            setResponsePage(new PageChoose(entity, ref, /* TODO limit list to choose from? */ store().getAll(ref.cls, Session.get().getId())));
                         }
                     }.setVisible(Objects.isNull(referent)));
 
@@ -157,7 +159,7 @@ public class PageEdit extends BasePage {
             add(new SubmitLink("delete") {
                 @Override
                 public void onSubmit() {
-                    store().delete(entity);
+                    store().delete(entity, Session.get().getId());
                     next();
                 }
             }.setDefaultFormProcessing(false));
@@ -177,7 +179,7 @@ public class PageEdit extends BasePage {
         }
 
         private void save() {
-            store().save(entity);
+            store().save(entity, Session.get().getId());
         }
 
         private void next() {

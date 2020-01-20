@@ -5,13 +5,18 @@ import org.neo4j.graphdb.factory.GraphDatabaseFactory;
 import org.neo4j.ogm.config.Configuration;
 import org.neo4j.ogm.drivers.embedded.driver.EmbeddedDriver;
 import org.neo4j.ogm.session.*;
+import org.slf4j.*;
 
 import java.io.*;
 import java.util.*;
 
 @SuppressWarnings({"rawtypes", "unchecked"})
 public class Store {
+    private final Logger LOG = LoggerFactory.getLogger(Store.class);
+
     private final SessionFactory factorySession;
+
+    private final Map<String, Session> sessions = new HashMap<>();
 
     public Store(final Set<Class> entities) {
         // TODO check to ensure all are Serializable, etc.
@@ -42,44 +47,43 @@ public class Store {
         this.factorySession = new SessionFactory(driver, "nu.mine.mosher.app.sample.model");
     }
 
+    private Session session(final String id) {
+        this.sessions.computeIfAbsent(id, k -> this.factorySession.openSession());
+        return this.sessions.get(id);
+    }
 
-
-    public long count(final Class cls) {
-        final Session session = this.factorySession.openSession();
+    public long count(final Class cls, String sessionID) {
+        final Session session = session(sessionID);
         return session.countEntitiesOfType(cls);
     }
 
-    public List getAll(final Class cls) {
-        final Session session = this.factorySession.openSession();
-        return List.copyOf(session.loadAll(cls, 1));
+    public Collection getAll(final Class cls, String sessionID) {
+        final Session session = session(sessionID);
+        final Collection entities = session.loadAll(cls, 1);
+        entities.forEach(e -> LOG.info("Loaded {}", e));
+        return entities;
     }
 
-    public Serializable load(final Class cls, final Long id) {
-        if (id == 0L) {
-            return create(cls);
-        }
-        final Session session = this.factorySession.openSession();
-        return (Serializable)session.load(cls, id, 1);
-    }
-
-    public void save(final Serializable entity) {
-        final Session session = this.factorySession.openSession();
+    public void save(final Serializable entity, String sessionID) {
+        final Session session = session(sessionID);
         try {
+            LOG.info("Saving {}", entity);
             session.save(entity, 1);
+            LOG.info("Saved  {}", entity);
         } catch (RuntimeException e) {
-            System.out.println("This will happen when an edge has a null reference to a node");
-            e.printStackTrace();
+            LOG.warn("Ignoring exception during save: {}", e.getMessage());
         }
     }
 
-    public void delete(final Serializable entity) {
-        final Session session = this.factorySession.openSession();
+    public void delete(final Serializable entity, String sessionID) {
+        final Session session = session(sessionID);
+        LOG.info("Deleting {}", entity);
         session.delete(entity);
     }
 
 
 
-    private static Serializable create(final Class cls) {
+    public static Serializable create(final Class cls) {
         try {
             return (Serializable)Arrays.
                 stream(cls.getDeclaredConstructors()).
