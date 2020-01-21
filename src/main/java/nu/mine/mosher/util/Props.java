@@ -1,5 +1,7 @@
 package nu.mine.mosher.util;
 
+import nu.mine.mosher.store.Store;
+
 import java.io.Serializable;
 import java.lang.reflect.*;
 import java.util.*;
@@ -22,10 +24,10 @@ import java.util.stream.*;
  */
 @SuppressWarnings("rawtypes")
 public final class Props {
-    private final Set<Class> entities;
+    private final Store store;
 
-    public Props(final Set<Class> entities) {
-        this.entities = Set.copyOf(entities);
+    public Props(final Store store) {
+        this.store = store;
     }
 
     public static class Ref implements Serializable {
@@ -45,7 +47,7 @@ public final class Props {
     public List<Ref> refsMultiple(final Class cls) {
         return
             collections(cls).
-            filter(f -> entities.contains(getGenType(f))).
+            filter(f -> isEntity(getGenType(f))).
             map(f -> new Ref(f.getName(), getGenType(f), true)).
             collect(Collectors.toList());
     }
@@ -54,7 +56,7 @@ public final class Props {
     public List<Ref> refsSingular(final Class cls) {
         return
             scalars(cls).
-            filter(f -> entities.contains(f.getType())).
+            filter(f -> isEntity(f.getType())).
             map(f -> new Ref(f.getName(), f.getType(), false)).
             collect(Collectors.toList());
     }
@@ -64,9 +66,13 @@ public final class Props {
     public List<String> properties(final Class cls) {
         return
             scalars(cls).
-            filter(f -> !entities.contains(f.getType())).
+            filter(f -> !isEntity(f.getType())).
             map(Field::getName).
             collect(Collectors.toList());
+    }
+
+    private boolean isEntity(final Class cls) {
+        return this.store.isEntity(cls);
     }
 
     private static Stream<Field> scalars(final Class cls) {

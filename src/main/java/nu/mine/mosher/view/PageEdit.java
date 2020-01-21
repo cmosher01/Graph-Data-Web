@@ -8,7 +8,6 @@ import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.*;
 import org.apache.wicket.markup.html.list.*;
 import org.apache.wicket.model.*;
-import org.apache.wicket.protocol.http.WebSession;
 
 import java.io.Serializable;
 import java.util.*;
@@ -71,7 +70,7 @@ public class PageEdit extends BasePage {
                     item.add(new SubmitLink("add") {
                         @Override
                         public void onSubmit() {
-                            setResponsePage(new PageChoose(entity, ref, store().getAll(ref.cls, Session.get().getId())));
+                            setResponsePage(new PageChoose(entity, ref, store().getAll(ref.cls)));
                         }
                     });
                 }
@@ -117,7 +116,7 @@ public class PageEdit extends BasePage {
                         @Override
                         public void onSubmit() {
                             save();
-                            setResponsePage(new PageChoose(entity, ref, /* TODO limit list to choose from? */ store().getAll(ref.cls, Session.get().getId())));
+                            setResponsePage(new PageChoose(entity, ref, /* TODO limit list to choose from? */ store().getAll(ref.cls)));
                         }
                     }.setVisible(Objects.isNull(referent)));
 
@@ -159,7 +158,7 @@ public class PageEdit extends BasePage {
             add(new SubmitLink("delete") {
                 @Override
                 public void onSubmit() {
-                    store().delete(entity, Session.get().getId());
+                    store().delete(entity);
                     next();
                 }
             }.setDefaultFormProcessing(false));
@@ -179,7 +178,7 @@ public class PageEdit extends BasePage {
         }
 
         private void save() {
-            store().save(entity, Session.get().getId());
+            store().save(entity);
         }
 
         private void next() {

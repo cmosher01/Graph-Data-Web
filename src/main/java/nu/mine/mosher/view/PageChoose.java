@@ -10,7 +10,6 @@ import org.apache.wicket.markup.html.list.*;
 import org.apache.wicket.model.*;
 
 import java.io.Serializable;
-import java.nio.file.attribute.UserDefinedFileAttributeView;
 import java.util.*;
 
 @SuppressWarnings({"unchecked", "rawtypes"})
@@ -23,7 +22,7 @@ public class PageChoose extends BasePage {
         this.ref = ref;
         add(new Label("entity", ref.name));
         add(new ListEntity(candidates));
-        add(new Label("empty", Model.of("[none]")).setVisible(store().count(ref.cls, Session.get().getId()) == 0L));
+        add(new Label("empty", Model.of("[none]")).setVisible(store().count(ref.cls) == 0L));
 //        add(new LinkNew());
     }
 

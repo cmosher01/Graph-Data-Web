@@ -1,7 +1,8 @@
 package nu.mine.mosher.view;
 
 
-import nu.mine.mosher.app.sample.model.Models;
+import nu.mine.mosher.app.App;
+import org.apache.wicket.Application;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.markup.html.list.*;
@@ -42,6 +43,6 @@ public class PageHome extends BasePage {
     }
 
     private static List<Class> entities() {
-        return List.copyOf(Models.entities());
+        return List.copyOf(((App)Application.get()).store().entities());
     }
 }
