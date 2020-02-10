@@ -4,7 +4,7 @@
     <ul>
         <li wicket:id="list">
             <a wicket:id="link">
-                <span wicket:id="display"/>
+                <span wicket:id="entity"/>
             </a>
         </li>
     </ul>

@@ -1,8 +1,8 @@
 package nu.mine.mosher.view;
 
 import nu.mine.mosher.app.App;
-import nu.mine.mosher.app.sample.Sample;
 import nu.mine.mosher.store.Store;
+import nu.mine.mosher.util.Utils;
 import org.apache.wicket.*;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.link.Link;
@@ -25,12 +25,7 @@ public class PageList extends BasePage {
     }
 
     private Collection getAll() {
-        Collection all = store().getAll(cls);
-        if (all.isEmpty()) {
-            Sample.create((App)Application.get());
-            all = store().getAll(cls);
-        }
-        return all;
+        return store().getAll(cls);
     }
 
     private final class ListEntity extends PropertyListView<Serializable> {
@@ -42,19 +37,19 @@ public class PageList extends BasePage {
         protected void populateItem(final ListItem item) {
             item.add(new LinkEntity((Serializable)item.getModelObject()));
         }
+    }
 
-        private final class LinkEntity extends Link<Void> {
-            private final Serializable entity;
-            public LinkEntity(final Serializable entity) {
-                super("link");
-                this.entity = entity;
-                add(new Label("display", entity.toString()));
-            }
+    private final class LinkEntity extends Link<Void> {
+        private final Long id;
+        public LinkEntity(final Serializable entity) {
+            super("link");
+            this.id = Utils.id(entity);
+            add(new Label("entity", Utils.str(entity)));
+        }
 
-            @Override
-            public void onClick() {
-                setResponsePage(new PageEdit(entity));
-            }
+        @Override
+        public void onClick() {
+            setResponsePage(new PageEdit(cls, id));
         }
     }
 
@@ -65,7 +60,7 @@ public class PageList extends BasePage {
 
         @Override
         public void onClick() {
-            setResponsePage(new PageEdit(Store.create(cls)));
+            setResponsePage(new PageEdit(cls, null));
         }
     }
 

@@ -1,6 +1,6 @@
-package nu.mine.mosher.app.sample.model;
+package nu.mine.mosher.app.sample;
 
-import org.neo4j.ogm.annotation.Relationship;
+import org.neo4j.ogm.annotation.*;
 
 import java.io.Serializable;
 import java.util.*;
@@ -14,13 +14,15 @@ import java.util.*;
 
 public class Event implements Serializable {
     private static final long serialVersionUID = 1L;
-    private Long id;
-    private String description;
-    @Relationship(type = "HAD_ROLE_IN", direction = Relationship.INCOMING)
-    private Set<Role> players = new HashSet<>();
+
+    @Id @GeneratedValue Long id;
+
+    String description;
+
+    @Relationship(type=Role.TYPE, direction=Relationship.INCOMING) Set<Role> players = new HashSet<>();
 
     @Override
     public String toString() {
-        return "event "+this.description;
+        return this.description;
     }
 }

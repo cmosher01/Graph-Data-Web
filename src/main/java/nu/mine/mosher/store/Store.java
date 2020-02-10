@@ -47,6 +47,16 @@ public class Store {
         return Objects.nonNull(this.factorySession.metaData().classInfo(cls));
     }
 
+    public boolean isRelationshipEntity(final Class cls) {
+        final ClassInfo info = this.factorySession.metaData().classInfo(cls);
+        return Objects.nonNull(info) && info.isRelationshipEntity();
+    }
+
+    public boolean isNodeEntity(final Class cls) {
+        final ClassInfo info = this.factorySession.metaData().classInfo(cls);
+        return Objects.nonNull(info) && !info.isRelationshipEntity();
+    }
+
     public List<Class> entities() {
         return this.
             factorySession.
@@ -69,12 +79,16 @@ public class Store {
         return entities;
     }
 
+    public Serializable load(final Class cls, final Long id) {
+        final Session session = this.factorySession.openSession();
+        return (Serializable)session.load(cls, id);
+    }
+
     public void save(final Serializable entity) {
         final Session session = this.factorySession.openSession();
         try {
             LOG.info("Saving {}", entity);
-            session.save(entity, 1);
-            LOG.info("Saved  {}", entity);
+            session.save(entity);
         } catch (RuntimeException e) {
             LOG.warn("Ignoring exception during save: {}", e.getMessage());
         }
@@ -84,6 +98,7 @@ public class Store {
         final Session session = this.factorySession.openSession();
         LOG.info("Deleting {}", entity);
         session.delete(entity);
+        session.clear();
     }
 
 

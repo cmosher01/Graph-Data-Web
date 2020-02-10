@@ -8,12 +8,16 @@ import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.markup.html.list.*;
 import org.apache.wicket.model.*;
+import org.slf4j.*;
 
 import java.io.Serializable;
+import java.lang.reflect.Field;
 import java.util.*;
 
 @SuppressWarnings({"unchecked", "rawtypes"})
 public class PageChoose extends BasePage {
+    private final Logger LOG = LoggerFactory.getLogger(PageChoose.class);
+
     private final Serializable parent;
     private final Props.Ref ref;
 
@@ -28,33 +32,61 @@ public class PageChoose extends BasePage {
 
 
 
-    private final class ListEntity extends PropertyListView {
+    private final class ListEntity extends PropertyListView<Serializable> {
         public ListEntity(Collection candidates) {
             super("list", Collections.list(Collections.enumeration(candidates)));
         }
 
         @Override
-        protected void populateItem(final ListItem item) {
+        protected void populateItem(final ListItem<Serializable> item) {
             item.add(new LinkEntity(item.getModelObject()));
         }
 
         private final class LinkEntity extends Link<Void> {
-            private final Object entity;
-            public LinkEntity(final Object entity) {
+            private final Serializable child;
+            public LinkEntity(final Serializable child) {
                 super("link");
-                this.entity = entity;
-                add(new Label("display", Utils.str(entity)));
+                this.child = child;
+                add(new Label("display", Utils.str(child)));
             }
 
             @Override
             public void onClick() {
                 if (ref.collection) {
-                    ((Collection)new PropertyModel<>(parent, ref.name).getObject()).add(entity);
+                    ((Collection)new PropertyModel<>(parent, ref.name).getObject()).add(child);
+                    clearRef(child, parent);
                 } else {
-                    new PropertyModel<>(parent, ref.name).setObject(entity);
+                    new PropertyModel<>(parent, ref.name).setObject(child);
                 }
-                setResponsePage(new PageEdit(parent));
+                setResponsePage(new PageEdit(parent.getClass(), Utils.id(parent)));
             }
+        }
+    }
+
+    private void clearRef(Serializable entity, Serializable parent) {
+        final Field xref = Arrays.
+            stream(entity.getClass().getDeclaredFields()).
+            filter(f -> parent.getClass().isAssignableFrom(f.getType())).
+            findAny().
+            orElseThrow();
+        xref.setAccessible(true);
+        try {
+            final Serializable orig = (Serializable)xref.get(entity);
+
+            LOG.info("preupdate: {}", entity);
+            LOG.info("preupdate: {}", orig);
+            xref.set(entity, parent);
+            ((Collection)new PropertyModel<>(orig, ref.name).getObject()).remove(entity);
+            LOG.info("updated 1: {}", entity);
+            LOG.info("updated 1: {}", orig);
+            store().save(entity);
+            LOG.info("updated 2: {}", entity);
+            LOG.info("updated 2: {}", orig);
+            store().save(orig);
+            LOG.info("updated 3: {}", entity);
+            LOG.info("updated 3: {}", orig);
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
         }
     }
 

@@ -7,8 +7,8 @@ dependencies {
     implementation group: 'org.apache.wicket', name: 'wicket', version: 'latest.integration', {
         exclude group: 'org.junit.jupiter', module: 'junit-jupiter-engine'
     }
-    implementation group: 'org.neo4j', name: 'neo4j', version: '3.4.17'
-    implementation group: 'org.neo4j', name: 'neo4j-ogm-core', version: '3.2.6'
-    implementation group: 'org.neo4j', name: 'neo4j-ogm-embedded-driver', version: '3.2.6'
+    implementation group: 'org.neo4j', name: 'neo4j', version: '3.+'
+    implementation group: 'org.neo4j', name: 'neo4j-ogm-core', version: '3.+'
+    implementation group: 'org.neo4j', name: 'neo4j-ogm-embedded-driver', version: '3.+'
     runtime group: 'org.slf4j', name: 'slf4j-simple', version: 'latest.integration'
 }

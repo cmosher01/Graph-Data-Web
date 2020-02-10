@@ -15,11 +15,11 @@
                 <wicket:container wicket:id="name"/>:
                 <ul>
                     <li wicket:id="ref">
-<!--                        <a wicket:id="link">-->
+                        <a wicket:id="link">
                             <span wicket:id="display"/>
-<!--                        </a>-->
+                        </a>
 <!--                        <a wicket:id="remove">{unlink}</a>-->
-                </li>
+                    </li>
                     <span wicket:id="empty"/>
                     <li>
                         <a wicket:id="add">{link}</a>

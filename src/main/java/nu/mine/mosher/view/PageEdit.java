@@ -14,13 +14,9 @@ import java.util.*;
 
 @SuppressWarnings({"rawtypes", "unchecked"})
 public class PageEdit extends BasePage {
-    private final Serializable entity;
-
-    public PageEdit(final Serializable entity) {
-        this.entity = entity;
-//        this.cls = entity.getClass();
-//        this.id = (Long)new PropertyModel<>(entity, "id").getObject();
-        add(new Label("entity", entity.getClass().getSimpleName()));
+    public PageEdit(Class cls, Long id) {
+        this.entity = Objects.isNull(id) ? Store.create(cls) : Objects.requireNonNull(store().load(cls, id));
+        add(new Label("entity", cls.getSimpleName()));
         add(new FormEntity());
     }
 
@@ -75,7 +71,7 @@ public class PageEdit extends BasePage {
                     });
                 }
 
-                class ReferenceListView extends ListView {
+                class ReferenceListView extends ListView<Serializable> {
                     private final String sPropName;
                     private final Serializable entity;
                     public ReferenceListView(Serializable entity, String sPropName, Collection referents) {
@@ -85,9 +81,10 @@ public class PageEdit extends BasePage {
                     }
 
                     @Override
-                    protected void populateItem(final ListItem item) {
+                    protected void populateItem(final ListItem<Serializable> item) {
                         // TODO link
-                        item.add(new Label("display", Utils.str(item.getModelObject())));
+                        final Serializable referent = item.getModelObject();
+                        item.add(new LinkEntity(referent).setVisible(Objects.nonNull(referent)));
                         // TODO implement "remove" link
                     }
                 }
@@ -101,12 +98,11 @@ public class PageEdit extends BasePage {
                 @Override
                 protected void populateItem(final ListItem<Props.Ref> item) {
                     final Props.Ref ref = item.getModelObject();
-                    final String sPropName = ref.name;
 
-                    final Component name = new Label("name", sPropName).setRenderBodyOnly(true);
+                    final Component name = new Label("name", ref.name).setRenderBodyOnly(true);
                     item.add(name);
 
-                    final Serializable referent = (Serializable)new PropertyModel<>(entity, sPropName).getObject();
+                    final Serializable referent = (Serializable)new PropertyModel<>(entity, ref.name).getObject();
                     // TODO how to handle if referent is a relation (edge) type?
 
                     item.add(new LinkEntity(referent).setVisible(Objects.nonNull(referent)));
@@ -129,26 +125,6 @@ public class PageEdit extends BasePage {
                     }.setVisible(Objects.nonNull(referent)));
                 }
 
-                final class LinkEntity extends SubmitLink {
-//                    private Long id;
-//                    private Class cls;
-                    private final Serializable referent;
-                    public LinkEntity(final Serializable referent) {
-                        super("link");
-                        this.referent = referent;
-//                        if (Objects.nonNull(entity)) {
-//                            id = (Long)new PropertyModel<>(entity, "id").getObject();
-//                            cls = entity.getClass();
-//                        }
-                        add(new Label("display", Utils.str(referent)));
-                    }
-
-                    @Override
-                    public void onSubmit() {
-                        save();
-                        setResponsePage(new PageEdit(referent));
-                    }
-                }
             });
 
 
@@ -184,6 +160,23 @@ public class PageEdit extends BasePage {
         private void next() {
             setResponsePage(new PageList(entity.getClass()));
         }
+
+
+
+        private final class LinkEntity extends SubmitLink {
+            private final Serializable referent;
+            public LinkEntity(final Serializable referent) {
+                super("link");
+                this.referent = referent;
+                add(new Label("display", Utils.str(referent)));
+            }
+
+            @Override
+            public void onSubmit() {
+                save();
+                setResponsePage(new PageEdit(this.referent.getClass(), Utils.id(this.referent)));
+            }
+        }
     }
 
     private static Store store() {
@@ -193,4 +186,6 @@ public class PageEdit extends BasePage {
     private static Props props() {
         return ((App)Application.get()).props();
     }
+
+    private final Serializable entity;
 }
