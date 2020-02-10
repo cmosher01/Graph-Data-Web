@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wicket:extend xmlns="http://www.w3.org/1999/xhtml" xmlns:wicket="http://wicket.apache.org">
+    <a wicket:id="list">{list}</a>
+    <h3 wicket:id="entity"/>
+    <a wicket:id="edit">{edit}</a>
+    <ul>
+        <li wicket:id="properties">
+            <wicket:container wicket:id="name"/>:
+            <span wicket:id="property"/>
+        </li>
+    </ul>
+
+    <ul>
+        <li wicket:id="refsMultiple">
+            <wicket:container wicket:id="name"/>:
+            <ul>
+                <li wicket:id="ref">
+                    <a wicket:id="link">
+                        <span wicket:id="display"/>
+                    </a>
+<!--                    <a wicket:id="remove">{unlink}</a>-->
+                </li>
+                <li>
+                    <span wicket:id="empty"/>
+                </li>
+                <li>
+                    <a wicket:id="add">{add link}</a>
+                </li>
+            </ul>
+        </li>
+
+        <li wicket:id="refsSingular">
+            <wicket:container wicket:id="name"/>:
+            <a wicket:id="link">
+                <span wicket:id="display"/>
+            </a>
+            <a wicket:id="remove">{unlink}</a>
+            <span wicket:id="empty"/>
+            <a wicket:id="add">{add link}</a>
+        </li>
+    </ul>
+    <p>
+        <a wicket:id="delete">{delete}</a>
+    </p>
+</wicket:extend>

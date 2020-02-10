@@ -54,41 +54,41 @@ public class PageChoose extends BasePage {
             public void onClick() {
                 if (ref.collection) {
                     ((Collection)new PropertyModel<>(parent, ref.name).getObject()).add(child);
-                    clearRef(child, parent);
+//                    clearRef(child, parent);
                 } else {
                     new PropertyModel<>(parent, ref.name).setObject(child);
                 }
-                setResponsePage(new PageEdit(parent.getClass(), Utils.id(parent)));
+                setResponsePage(new PageEdit(parent.getClass(), Utils.uuid(parent)));
             }
         }
     }
 
-    private void clearRef(Serializable entity, Serializable parent) {
-        final Field xref = Arrays.
-            stream(entity.getClass().getDeclaredFields()).
-            filter(f -> parent.getClass().isAssignableFrom(f.getType())).
-            findAny().
-            orElseThrow();
-        xref.setAccessible(true);
-        try {
-            final Serializable orig = (Serializable)xref.get(entity);
-
-            LOG.info("preupdate: {}", entity);
-            LOG.info("preupdate: {}", orig);
-            xref.set(entity, parent);
-            ((Collection)new PropertyModel<>(orig, ref.name).getObject()).remove(entity);
-            LOG.info("updated 1: {}", entity);
-            LOG.info("updated 1: {}", orig);
-            store().save(entity);
-            LOG.info("updated 2: {}", entity);
-            LOG.info("updated 2: {}", orig);
-            store().save(orig);
-            LOG.info("updated 3: {}", entity);
-            LOG.info("updated 3: {}", orig);
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        }
-    }
+//    private void clearRef(Serializable entity, Serializable parent) {
+//        final Field xref = Arrays.
+//            stream(entity.getClass().getDeclaredFields()).
+//            filter(f -> parent.getClass().isAssignableFrom(f.getType())).
+//            findAny().
+//            orElseThrow();
+//        xref.setAccessible(true);
+//        try {
+//            final Serializable orig = (Serializable)xref.get(entity);
+//
+//            LOG.info("preupdate: {}", entity);
+//            LOG.info("preupdate: {}", orig);
+//            xref.set(entity, parent);
+//            ((Collection)new PropertyModel<>(orig, ref.name).getObject()).remove(entity);
+//            LOG.info("updated 1: {}", entity);
+//            LOG.info("updated 1: {}", orig);
+//            store().save(entity);
+//            LOG.info("updated 2: {}", entity);
+//            LOG.info("updated 2: {}", orig);
+//            store().save(orig);
+//            LOG.info("updated 3: {}", entity);
+//            LOG.info("updated 3: {}", orig);
+//        } catch (IllegalAccessException e) {
+//            e.printStackTrace();
+//        }
+//    }
 
 
 //    private final class LinkNew extends Link<Void> {

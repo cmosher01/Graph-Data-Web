@@ -1,5 +1,6 @@
 package nu.mine.mosher.store;
 
+import org.apache.wicket.model.PropertyModel;
 import org.neo4j.graphdb.GraphDatabaseService;
 import org.neo4j.graphdb.factory.GraphDatabaseFactory;
 import org.neo4j.ogm.config.Configuration;
@@ -58,7 +59,8 @@ public class Store {
     }
 
     public List<Class> entities() {
-        return this.
+        return
+            this.
             factorySession.
             metaData().
             persistentEntities().
@@ -74,14 +76,15 @@ public class Store {
 
     public Collection getAll(final Class cls) {
         final Session session = this.factorySession.openSession();
-        final Collection entities = session.loadAll(cls, 1);
+        final Collection entities = Objects.requireNonNull(session.loadAll(cls, 1));
         entities.forEach(e -> LOG.info("Loaded {}", e));
         return entities;
     }
 
-    public Serializable load(final Class cls, final Long id) {
+    public Serializable load(final Class cls, final UUID uuid) {
         final Session session = this.factorySession.openSession();
-        return (Serializable)session.load(cls, id);
+        final Object entity = Objects.requireNonNull(session.load(cls, uuid));
+        return (Serializable)entity;
     }
 
     public void save(final Serializable entity) {
@@ -105,14 +108,19 @@ public class Store {
 
     public static Serializable create(final Class cls) {
         try {
-            return (Serializable)Arrays.
+            return uuidstamp(Arrays.
                 stream(cls.getDeclaredConstructors()).
                 filter(c -> c.getGenericParameterTypes().length == 0).
                 findAny().
                 orElseThrow().
-                newInstance();
+                newInstance());
         } catch (final Throwable e) {
             throw new IllegalStateException(e);
         }
+    }
+
+    private static Serializable uuidstamp(final Object entity) {
+        new PropertyModel<>(entity, "uuid").setObject(UUID.randomUUID());
+        return (Serializable)entity;
     }
 }

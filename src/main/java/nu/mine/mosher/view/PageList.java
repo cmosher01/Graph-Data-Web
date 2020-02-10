@@ -40,16 +40,16 @@ public class PageList extends BasePage {
     }
 
     private final class LinkEntity extends Link<Void> {
-        private final Long id;
+        private final UUID uuid;
         public LinkEntity(final Serializable entity) {
             super("link");
-            this.id = Utils.id(entity);
+            this.uuid = Utils.uuid(entity);
             add(new Label("entity", Utils.str(entity)));
         }
 
         @Override
         public void onClick() {
-            setResponsePage(new PageEdit(cls, id));
+            setResponsePage(new PageView(cls, uuid));
         }
     }
 

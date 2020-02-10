@@ -93,6 +93,8 @@ public final class Props {
         return Arrays.
             stream(cls.getDeclaredFields()).
             filter(f -> !f.getName().equals("id")).
+            filter(f -> !f.getName().equals("version")).
+            filter(f -> !f.getName().equals("uuid")).
             filter(f -> !f.isSynthetic()).
             filter(f -> !Modifier.isStatic(f.getModifiers())).
             filter(f -> !Modifier.isTransient(f.getModifiers()));

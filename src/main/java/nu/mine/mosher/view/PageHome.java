@@ -6,7 +6,6 @@ import org.apache.wicket.Application;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.markup.html.list.*;
-import org.apache.wicket.model.PropertyModel;
 
 import java.util.List;
 
@@ -26,19 +25,19 @@ public class PageHome extends BasePage {
         protected void populateItem(final ListItem<Class> item) {
             item.add(new LinkEntity(item.getModelObject()));
         }
+    }
 
-        private static final class LinkEntity extends Link<Void> {
-            private final Class cls;
-            public LinkEntity(final Class cls) {
-                super("link");
-                this.cls = cls;
-                add(new Label("entity", new PropertyModel<>(cls, "simpleName")));
-            }
+    private static final class LinkEntity extends Link<Void> {
+        private final Class cls;
+        public LinkEntity(final Class cls) {
+            super("link");
+            this.cls = cls;
+            add(new Label("entity", cls.getSimpleName()));
+        }
 
-            @Override
-            public void onClick() {
-                setResponsePage(new PageList(cls));
-            }
+        @Override
+        public void onClick() {
+            setResponsePage(new PageList(cls));
         }
     }
 

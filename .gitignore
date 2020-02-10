@@ -1,5 +1,7 @@
 /.gradle/
 /build/
 /database/
+/logs/
+/store_lock
 /.idea/
 /out/
