@@ -3,9 +3,16 @@ package nu.mine.mosher.util;
 
 import org.apache.wicket.model.PropertyModel;
 
+import java.io.Serializable;
 import java.util.*;
 
 public final class Utils {
+    public static Serializable resetEntity(final Serializable entity) {
+        new PropertyModel<>(entity, "id").setObject(null);
+        new PropertyModel<>(entity, "version").setObject(null);
+        return entity;
+    }
+
     public static UUID uuid(final Object entity) {
         return (UUID)new PropertyModel<>(entity, "uuid").getObject();
     }

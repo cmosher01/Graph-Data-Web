@@ -81,28 +81,33 @@ public class Store {
         return entities;
     }
 
-    public Serializable load(final Class cls, final UUID uuid) {
-        final Session session = this.factorySession.openSession();
-        final Object entity = Objects.requireNonNull(session.load(cls, uuid));
-        return (Serializable)entity;
+    public Session createSession() {
+        return this.factorySession.openSession();
     }
-
-    public void save(final Serializable entity) {
-        final Session session = this.factorySession.openSession();
-        try {
-            LOG.info("Saving {}", entity);
-            session.save(entity);
-        } catch (RuntimeException e) {
-            LOG.warn("Ignoring exception during save: {}", e.getMessage());
-        }
-    }
-
-    public void delete(final Serializable entity) {
-        final Session session = this.factorySession.openSession();
-        LOG.info("Deleting {}", entity);
-        session.delete(entity);
-        session.clear();
-    }
+// TODO need to use the same session that loaded in order to save or delete
+//    public Serializable load(final Class cls, final UUID uuid) {
+//        final Session session = this.factorySession.openSession();
+//        final Object entity = Objects.requireNonNull(session.load(cls, uuid));
+//        return (Serializable)entity;
+//    }
+//
+//    public boolean save(final Serializable entity) {
+//        final Session session = this.factorySession.openSession();
+//        try {
+//            LOG.info("Saving {}", entity);
+//            session.save(entity);
+//            return true;
+//        } catch (RuntimeException e) {
+//            LOG.warn("Ignoring exception during save: {}", e.getMessage());
+//            return false;
+//        }
+//    }
+//
+//    public void delete(final Serializable entity) {
+//        final Session session = this.factorySession.openSession();
+//        LOG.info("Deleting {}", entity);
+//        session.delete(entity);
+//    }
 
 
 

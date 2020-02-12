@@ -11,23 +11,30 @@ import org.apache.wicket.model.*;
 import org.slf4j.*;
 
 import java.io.Serializable;
-import java.lang.reflect.Field;
 import java.util.*;
 
 @SuppressWarnings({"unchecked", "rawtypes"})
 public class PageChoose extends BasePage {
     private final Logger LOG = LoggerFactory.getLogger(PageChoose.class);
 
+    private final transient org.neo4j.ogm.session.Session ogm;
     private final Serializable parent;
     private final Props.Ref ref;
 
-    public PageChoose(Serializable entity, Props.Ref ref, Collection candidates) {
+    public PageChoose(Serializable entity, Props.Ref ref, Collection candidates, org.neo4j.ogm.session.Session ogm) {
+        this.ogm = Objects.requireNonNull(ogm);
         this.parent = entity;
         this.ref = ref;
-        add(new Label("entity", ref.name));
+        add(new Label("entity", ref.name+":"+ref.cls.getSimpleName()));
         add(new ListEntity(candidates));
         add(new Label("empty", Model.of("[none]")).setVisible(store().count(ref.cls) == 0L));
 //        add(new LinkNew());
+        add(new Link<Void>("cancel") {
+            @Override
+            public void onClick() {
+                setResponsePage(new PageView(parent, ogm));
+            }
+        });
     }
 
 
@@ -39,14 +46,16 @@ public class PageChoose extends BasePage {
 
         @Override
         protected void populateItem(final ListItem<Serializable> item) {
-            item.add(new LinkEntity(item.getModelObject()));
+            item.add(new LinkEntity(item.getModelObject(), ogm));
         }
 
         private final class LinkEntity extends Link<Void> {
+            private final transient org.neo4j.ogm.session.Session ogm;
             private final Serializable child;
-            public LinkEntity(final Serializable child) {
+            public LinkEntity(final Serializable child, org.neo4j.ogm.session.Session ogm) {
                 super("link");
                 this.child = child;
+                this.ogm = ogm;
                 add(new Label("display", Utils.str(child)));
             }
 
@@ -54,41 +63,21 @@ public class PageChoose extends BasePage {
             public void onClick() {
                 if (ref.collection) {
                     ((Collection)new PropertyModel<>(parent, ref.name).getObject()).add(child);
-//                    clearRef(child, parent);
+                    // TODO
                 } else {
                     new PropertyModel<>(parent, ref.name).setObject(child);
+                    ogm.delete(parent);
                 }
-                setResponsePage(new PageEdit(parent.getClass(), Utils.uuid(parent)));
+                try {
+                    ogm.save(Utils.resetEntity(parent));
+                    setResponsePage(new PageView(parent.getClass(), Utils.uuid(parent), store().createSession()));
+                } catch (Throwable e) {
+                    e.printStackTrace();
+                    setResponsePage(new PageView(parent, ogm));
+                }
             }
         }
     }
-
-//    private void clearRef(Serializable entity, Serializable parent) {
-//        final Field xref = Arrays.
-//            stream(entity.getClass().getDeclaredFields()).
-//            filter(f -> parent.getClass().isAssignableFrom(f.getType())).
-//            findAny().
-//            orElseThrow();
-//        xref.setAccessible(true);
-//        try {
-//            final Serializable orig = (Serializable)xref.get(entity);
-//
-//            LOG.info("preupdate: {}", entity);
-//            LOG.info("preupdate: {}", orig);
-//            xref.set(entity, parent);
-//            ((Collection)new PropertyModel<>(orig, ref.name).getObject()).remove(entity);
-//            LOG.info("updated 1: {}", entity);
-//            LOG.info("updated 1: {}", orig);
-//            store().save(entity);
-//            LOG.info("updated 2: {}", entity);
-//            LOG.info("updated 2: {}", orig);
-//            store().save(orig);
-//            LOG.info("updated 3: {}", entity);
-//            LOG.info("updated 3: {}", orig);
-//        } catch (IllegalAccessException e) {
-//            e.printStackTrace();
-//        }
-//    }
 
 
 //    private final class LinkNew extends Link<Void> {
@@ -98,7 +87,8 @@ public class PageChoose extends BasePage {
 //
 //        @Override
 //        public void onClick() {
-//            setResponsePage(new PageEdit(cls, 0L));
+//            TODO how will this work?
+//            setResponsePage(new PageEdit(cls, null));
 //        }
 //    }
 

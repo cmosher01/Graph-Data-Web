@@ -22,6 +22,9 @@ public class PageList extends BasePage {
         add(new ListEntity());
         add(new Label("empty", Model.of("[none]")).setVisible(store().count(cls) == 0L));
         add(new LinkNew());
+        System.out.println("--------------------------------------");
+        System.out.println(getSession().getId());
+        System.out.println("--------------------------------------");
     }
 
     private Collection getAll() {
@@ -49,7 +52,7 @@ public class PageList extends BasePage {
 
         @Override
         public void onClick() {
-            setResponsePage(new PageView(cls, uuid));
+            setResponsePage(new PageView(cls, uuid, store().createSession()));
         }
     }
 
@@ -60,7 +63,7 @@ public class PageList extends BasePage {
 
         @Override
         public void onClick() {
-            setResponsePage(new PageEdit(cls, null));
+            setResponsePage(new PageEdit(cls, null, store().createSession()));
         }
     }
 

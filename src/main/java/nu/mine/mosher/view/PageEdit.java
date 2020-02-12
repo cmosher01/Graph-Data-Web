@@ -14,9 +14,10 @@ import java.util.*;
 
 @SuppressWarnings({"rawtypes", "unchecked"})
 public class PageEdit extends BasePage {
-    public PageEdit(Class cls, UUID uuid) {
+    public PageEdit(Class cls, UUID uuid, org.neo4j.ogm.session.Session ogm) {
+        this.ogm = Objects.requireNonNull(ogm);
         this.isNew = Objects.isNull(uuid);
-        this.entity = this.isNew ? Store.create(cls) : store().load(cls, uuid);
+        this.entity = this.isNew ? Store.create(cls) : (Serializable)ogm.load(cls, uuid);
         add(new Label("entity", cls.getSimpleName()));
         add(new FormEntity());
     }
@@ -24,8 +25,6 @@ public class PageEdit extends BasePage {
     private final class FormEntity extends Form<Serializable> {
         public FormEntity() {
             super("form", Model.of(entity));
-
-
 
 
 
@@ -49,14 +48,15 @@ public class PageEdit extends BasePage {
 
 
 
-
-
             add(new SubmitLink("cancel") {
                 @Override
                 public void onSubmit() {
                     next();
                 }
             }.setDefaultFormProcessing(false));
+
+
+
             add(new SubmitLink("save") {
                 @Override
                 public void onSubmit() {
@@ -67,15 +67,24 @@ public class PageEdit extends BasePage {
         }
 
         private void save() {
-            store().save(entity);
-            isNew = false;
+            isBad = true;
+            try {
+                ogm.save(entity);
+                isNew = false;
+                isBad = false;
+            } catch (Throwable e) {
+                e.printStackTrace();
+            }
         }
 
         private void next() {
-            if (isNew) {
+            if (isBad) {
+                // maybe it just needs links, so take them to the view-link page
+                setResponsePage(new PageView(entity, ogm));
+            } else if (isNew) {
                 setResponsePage(new PageList(entity.getClass()));
             } else {
-                setResponsePage(new PageView(entity.getClass(), Utils.uuid(entity)));
+                setResponsePage(new PageView(entity.getClass(), Utils.uuid(entity), store().createSession()));
             }
         }
     }
@@ -90,4 +99,6 @@ public class PageEdit extends BasePage {
 
     private final Serializable entity;
     private boolean isNew;
+    private boolean isBad;
+    private final transient org.neo4j.ogm.session.Session ogm;
 }

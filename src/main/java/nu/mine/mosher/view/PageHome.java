@@ -13,6 +13,7 @@ import java.util.List;
 @SuppressWarnings({"rawtypes"})
 public class PageHome extends BasePage {
     public PageHome() {
+        setVersioned(false);
         add(new ListEntity());
     }
 

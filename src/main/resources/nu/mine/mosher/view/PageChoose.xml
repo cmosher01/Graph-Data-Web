@@ -9,7 +9,8 @@
         </li>
     </ul>
     <span wicket:id="empty"/>
-<!--    <p>-->
-<!--        <input type="button" wicket:id="new" value="New"/>-->
-<!--    </p>-->
+    <!-- add new ? -->
+    <p>
+        <a wicket:id="cancel">{cancel}</a>
+    </p>
 </wicket:extend>
