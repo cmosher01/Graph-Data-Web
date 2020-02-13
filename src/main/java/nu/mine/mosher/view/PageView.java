@@ -14,19 +14,14 @@ import java.util.*;
 
 @SuppressWarnings({"rawtypes", "unchecked"})
 public class PageView extends BasePage {
-    public PageView(Class cls, UUID uuid, org.neo4j.ogm.session.Session ogm) {
-        this(
-            (Serializable)ogm.load(cls,Objects.requireNonNull(uuid)),
-            ogm);
+    public PageView(Class cls, UUID uuid) {
+        this.entity = Objects.requireNonNull((Serializable)ogm().load(cls,Objects.requireNonNull(uuid)));
+        init();
     }
 
-    public PageView(Serializable entity, org.neo4j.ogm.session.Session ogm) {
+    public PageView(Serializable entity) {
         this.entity = Objects.requireNonNull(entity);
-        this.ogm = Objects.requireNonNull(ogm);
         init();
-        System.out.println("--------------------------------------");
-        System.out.println(getSession().getId());
-        System.out.println("--------------------------------------");
     }
 
 
@@ -48,7 +43,7 @@ public class PageView extends BasePage {
             // TODO ogm transient
             @Override
             public void onClick() {
-                setResponsePage(new PageEdit(entity.getClass(), Utils.uuid(entity), ogm));
+                setResponsePage(new PageEdit(entity.getClass(), Utils.uuid(entity)));
             }
         });
 
@@ -82,7 +77,7 @@ public class PageView extends BasePage {
                     // TODO ogm transient
                     @Override
                     public void onClick() {
-                        setResponsePage(new PageChoose(entity, ref, store().getAll(ref.cls), ogm));
+                        setResponsePage(new PageChoose(entity, ref, store().getAll(ref.cls)));
                     }
                 });
             }
@@ -129,11 +124,11 @@ public class PageView extends BasePage {
                     public void onClick() {
                         new PropertyModel<>(entity, ref.name).setObject(null);
                         try {
-                            ogm.save(entity);
-                            setResponsePage(new PageView(entity.getClass(), Utils.uuid(entity), store().createSession()));
+                            ogm().save(entity);
+                            setResponsePage(new PageView(entity.getClass(), Utils.uuid(entity)));
                         } catch (Throwable e) {
                             e.printStackTrace();
-                            setResponsePage(new PageView(entity, ogm));
+                            setResponsePage(new PageView(entity));
                         }
                     }
                 }.setVisible(Objects.nonNull(referent)));
@@ -144,7 +139,7 @@ public class PageView extends BasePage {
                     // TODO ogm transient
                     @Override
                     public void onClick() {
-                        setResponsePage(new PageChoose(entity, ref, /* TODO limit list to choose from? */ store().getAll(ref.cls), ogm));
+                        setResponsePage(new PageChoose(entity, ref, /* TODO limit list to choose from? */ store().getAll(ref.cls)));
                     }
                 }.setVisible(Objects.isNull(referent)));
             }
@@ -157,14 +152,14 @@ public class PageView extends BasePage {
             // TODO ogm transient
             @Override
             public void onClick() {
-                ogm.delete(entity);
+                ogm().delete(entity);
                 setResponsePage(new PageList(entity.getClass()));
             }
         });
     }
 
 
-    private static final class LinkEntity extends Link<Void> {
+    private final class LinkEntity extends Link<Void> {
         private final Serializable referent;
         public LinkEntity(final Serializable referent) {
             super("link");
@@ -174,11 +169,13 @@ public class PageView extends BasePage {
 
         @Override
         public void onClick() {
-            setResponsePage(new PageView(this.referent.getClass(), Utils.uuid(this.referent), store().createSession()));
+            setResponsePage(new PageView(this.referent.getClass(), Utils.uuid(this.referent)));
         }
     }
 
-
+    private org.neo4j.ogm.session.Session ogm() {
+        return store().getSession(getSession().getId());
+    }
 
     private static Store store() {
         return ((App)Application.get()).store();
@@ -191,5 +188,4 @@ public class PageView extends BasePage {
 
 
     private final Serializable entity;
-    private final transient org.neo4j.ogm.session.Session ogm;
 }

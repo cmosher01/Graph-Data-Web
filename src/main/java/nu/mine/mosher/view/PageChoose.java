@@ -17,12 +17,10 @@ import java.util.*;
 public class PageChoose extends BasePage {
     private final Logger LOG = LoggerFactory.getLogger(PageChoose.class);
 
-    private final transient org.neo4j.ogm.session.Session ogm;
     private final Serializable parent;
     private final Props.Ref ref;
 
-    public PageChoose(Serializable entity, Props.Ref ref, Collection candidates, org.neo4j.ogm.session.Session ogm) {
-        this.ogm = Objects.requireNonNull(ogm);
+    public PageChoose(Serializable entity, Props.Ref ref, Collection candidates) {
         this.parent = entity;
         this.ref = ref;
         add(new Label("entity", ref.name+":"+ref.cls.getSimpleName()));
@@ -32,7 +30,7 @@ public class PageChoose extends BasePage {
         add(new Link<Void>("cancel") {
             @Override
             public void onClick() {
-                setResponsePage(new PageView(parent, ogm));
+                setResponsePage(new PageView(parent));
             }
         });
     }
@@ -46,16 +44,14 @@ public class PageChoose extends BasePage {
 
         @Override
         protected void populateItem(final ListItem<Serializable> item) {
-            item.add(new LinkEntity(item.getModelObject(), ogm));
+            item.add(new LinkEntity(item.getModelObject()));
         }
 
         private final class LinkEntity extends Link<Void> {
-            private final transient org.neo4j.ogm.session.Session ogm;
             private final Serializable child;
-            public LinkEntity(final Serializable child, org.neo4j.ogm.session.Session ogm) {
+            public LinkEntity(final Serializable child) {
                 super("link");
                 this.child = child;
-                this.ogm = ogm;
                 add(new Label("display", Utils.str(child)));
             }
 
@@ -66,14 +62,14 @@ public class PageChoose extends BasePage {
                     // TODO
                 } else {
                     new PropertyModel<>(parent, ref.name).setObject(child);
-                    ogm.delete(parent);
+                    ogm().delete(parent);
                 }
                 try {
-                    ogm.save(Utils.resetEntity(parent));
-                    setResponsePage(new PageView(parent.getClass(), Utils.uuid(parent), store().createSession()));
+                    ogm().save(Utils.resetEntity(parent));
+                    setResponsePage(new PageView(parent.getClass(), Utils.uuid(parent)));
                 } catch (Throwable e) {
                     e.printStackTrace();
-                    setResponsePage(new PageView(parent, ogm));
+                    setResponsePage(new PageView(parent));
                 }
             }
         }
@@ -93,6 +89,10 @@ public class PageChoose extends BasePage {
 //    }
 
 
+
+    private org.neo4j.ogm.session.Session ogm() {
+        return store().getSession(getSession().getId());
+    }
 
     private static Store store() {
         return ((App)Application.get()).store();

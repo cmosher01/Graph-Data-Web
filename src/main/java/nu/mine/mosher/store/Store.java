@@ -81,10 +81,12 @@ public class Store {
         return entities;
     }
 
-    public Session createSession() {
-        return this.factorySession.openSession();
+    private static final Map<String, Session> cacheSession = new HashMap<>();
+
+    public Session getSession(final String id) {
+        return cacheSession.computeIfAbsent(id, k -> this.factorySession.openSession());
     }
-// TODO need to use the same session that loaded in order to save or delete
+
 //    public Serializable load(final Class cls, final UUID uuid) {
 //        final Session session = this.factorySession.openSession();
 //        final Object entity = Objects.requireNonNull(session.load(cls, uuid));

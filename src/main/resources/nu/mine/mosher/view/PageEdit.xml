@@ -11,8 +11,8 @@
             </li>
         </ul>
         <p>
-            <a wicket:id="save">{save}</a>
             <a wicket:id="cancel">{cancel}</a>
+            <input type="submit" value="save"/>
         </p>
     </form>
 </wicket:extend>

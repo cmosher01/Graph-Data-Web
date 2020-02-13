@@ -14,7 +14,7 @@ public final class Utils {
     }
 
     public static UUID uuid(final Object entity) {
-        return (UUID)new PropertyModel<>(entity, "uuid").getObject();
+        return (UUID)Objects.requireNonNull(new PropertyModel<>(entity, "uuid").getObject());
     }
 
 //    public static String ids(final Collection r) {

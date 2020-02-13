@@ -10,4 +10,6 @@ Web application for editing Neo4j graphs.
 
 The data model is defined in OGM.
 
+Requires sticky sessions.
+
 ![flow](./ui_flow.svg)
