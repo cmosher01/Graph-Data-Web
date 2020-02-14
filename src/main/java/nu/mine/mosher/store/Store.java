@@ -87,6 +87,10 @@ public class Store {
         return cacheSession.computeIfAbsent(id, k -> this.factorySession.openSession());
     }
 
+    public Session dropSession(final String id) {
+        return cacheSession.remove(id);
+    }
+
 //    public Serializable load(final Class cls, final UUID uuid) {
 //        final Session session = this.factorySession.openSession();
 //        final Object entity = Objects.requireNonNull(session.load(cls, uuid));

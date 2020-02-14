@@ -13,20 +13,16 @@
     <ul>
         <li wicket:id="refsMultiple">
             <wicket:container wicket:id="name"/>:
-            <ul>
+            <ul style="margin-left: 0; padding-left: 40px;">
                 <li wicket:id="ref">
                     <a wicket:id="link">
                         <span wicket:id="display"/>
                     </a>
-<!--                    <a wicket:id="remove">{unlink}</a>-->
+                    <a wicket:id="remove">{unlink}</a>
                 </li>
-                <li>
-                    <span wicket:id="empty"/>
-                </li>
-                <li>
-                    <a wicket:id="add">{add link}</a>
-                </li>
+                <li wicket:id="empty"/>
             </ul>
+            <a style="margin-left: 0; padding-left: 40px;" wicket:id="add">{add link}</a>
         </li>
 
         <li wicket:id="refsSingular">

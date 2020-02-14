@@ -57,19 +57,16 @@ public class PageEdit extends BasePage {
 
         @Override
         protected void onSubmit() {
-            save();
-            next();
-        }
-
-        private void save() {
             isBad = true;
             try {
                 ogm().save(entity);
+                store().dropSession(getSession().getId());
                 isNew = false;
                 isBad = false;
             } catch (Throwable e) {
                 e.printStackTrace();
             }
+            next();
         }
 
         private void next() {

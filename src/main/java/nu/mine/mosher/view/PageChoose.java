@@ -59,13 +59,13 @@ public class PageChoose extends BasePage {
             public void onClick() {
                 if (ref.collection) {
                     ((Collection)new PropertyModel<>(parent, ref.name).getObject()).add(child);
-                    // TODO
                 } else {
                     new PropertyModel<>(parent, ref.name).setObject(child);
                     ogm().delete(parent);
                 }
                 try {
                     ogm().save(Utils.resetEntity(parent));
+                    store().dropSession(getSession().getId());
                     setResponsePage(new PageView(parent.getClass(), Utils.uuid(parent)));
                 } catch (Throwable e) {
                     e.printStackTrace();

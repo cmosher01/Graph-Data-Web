@@ -14,6 +14,8 @@ import java.util.*;
 
 @SuppressWarnings({"rawtypes", "unchecked"})
 public class PageView extends BasePage {
+    private final Serializable entity;
+
     public PageView(Class cls, UUID uuid) {
         this.entity = Objects.requireNonNull((Serializable)ogm().load(cls,Objects.requireNonNull(uuid)));
         init();
@@ -23,7 +25,6 @@ public class PageView extends BasePage {
         this.entity = Objects.requireNonNull(entity);
         init();
     }
-
 
     private void init() {
         add(new Link<Void>("list") {
@@ -40,7 +41,6 @@ public class PageView extends BasePage {
 
 
         add(new Link<Void>("edit") {
-            // TODO ogm transient
             @Override
             public void onClick() {
                 setResponsePage(new PageEdit(entity.getClass(), Utils.uuid(entity)));
@@ -64,39 +64,36 @@ public class PageView extends BasePage {
             @Override
             protected void populateItem(final ListItem<Props.Ref> item) {
                 final Props.Ref ref = item.getModelObject();
-                final String sPropName = ref.name;
 
-                final Component name = new Label("name", sPropName).setRenderBodyOnly(true);
+                final Component name = new Label("name", ref.name).setRenderBodyOnly(true);
                 item.add(name);
 
-                final Collection referents = (Collection)new PropertyModel<>(entity, sPropName).getObject();
-                item.add(new ReferenceListView(entity, sPropName, referents));
+                final Collection referents = (Collection)new PropertyModel<>(entity, ref.name).getObject();
+                item.add(new ReferenceListView(ref, referents));
                 item.add(new Label("empty", Model.of("[none]")).setVisible(referents.size() == 0L));
 
+                // A relationship entity can never already be in existence, so we always need
+                // to make a new one here, rather than go to PageChooser
                 item.add(new Link<Void>("add") {
-                    // TODO ogm transient
                     @Override
                     public void onClick() {
-                        setResponsePage(new PageChoose(entity, ref, store().getAll(ref.cls)));
+                        setResponsePage(new PageEdit(ref.cls, null));
                     }
                 });
             }
 
             class ReferenceListView extends ListView<Serializable> {
-                private final String sPropName;
-                private final Serializable entity;
-                public ReferenceListView(Serializable entity, String sPropName, Collection referents) {
+                private final Props.Ref ref;
+                public ReferenceListView(Props.Ref ref, Collection referents) {
                     super("ref", List.copyOf(referents));
-                    this.sPropName = sPropName;
-                    this.entity = entity;
+                    this.ref = ref;
                 }
 
                 @Override
                 protected void populateItem(final ListItem<Serializable> item) {
-                    // TODO link
                     final Serializable referent = item.getModelObject();
-                    item.add(new LinkEntity(referent).setVisible(Objects.nonNull(referent)));
-                    // TODO implement "remove" link
+                    item.add(new LinkEntity(referent));
+                    item.add(new LinkRemove(ref, referent));
                 }
             }
         });
@@ -114,29 +111,13 @@ public class PageView extends BasePage {
                 item.add(name);
 
                 final Serializable referent = (Serializable)new PropertyModel<>(entity, ref.name).getObject();
-                // TODO how to handle if referent is a relation (edge) type?
 
                 item.add(new LinkEntity(referent).setVisible(Objects.nonNull(referent)));
 
-                item.add(new Link<Void>("remove") {
-                    // TODO ogm transient
-                    @Override
-                    public void onClick() {
-                        new PropertyModel<>(entity, ref.name).setObject(null);
-                        try {
-                            ogm().save(entity);
-                            setResponsePage(new PageView(entity.getClass(), Utils.uuid(entity)));
-                        } catch (Throwable e) {
-                            e.printStackTrace();
-                            setResponsePage(new PageView(entity));
-                        }
-                    }
-                }.setVisible(Objects.nonNull(referent)));
-
+                item.add(new LinkRemove(ref, referent).setVisible(Objects.nonNull(referent)));
                 item.add(new Label("empty", Model.of("[none]")).setVisible(Objects.isNull(referent)));
 
                 item.add(new Link<Void>("add") {
-                    // TODO ogm transient
                     @Override
                     public void onClick() {
                         setResponsePage(new PageChoose(entity, ref, /* TODO limit list to choose from? */ store().getAll(ref.cls)));
@@ -149,7 +130,6 @@ public class PageView extends BasePage {
 
 
         add(new Link<Void>("delete") {
-            // TODO ogm transient
             @Override
             public void onClick() {
                 ogm().delete(entity);
@@ -158,8 +138,33 @@ public class PageView extends BasePage {
         });
     }
 
+    private final class LinkRemove extends Link<Void> {
+        private final Props.Ref ref;
+        private final Serializable referent;
+        public LinkRemove(Props.Ref ref, Serializable referent) {
+            super("remove");
+            this.ref = ref;
+            this.referent = referent;
+        }
+        @Override
+        public void onClick() {
+            if (ref.collection) {
+                ((Collection)new PropertyModel<>(entity, ref.name).getObject()).remove(referent);
+            } else {
+                new PropertyModel<>(entity, ref.name).setObject(null);
+            }
+            try {
+                ogm().save(entity);
+                store().dropSession(getSession().getId());
+                setResponsePage(new PageView(entity.getClass(), Utils.uuid(entity)));
+            } catch (Throwable e) {
+                e.printStackTrace();
+                setResponsePage(new PageView(entity));
+            }
+        }
+    }
 
-    private final class LinkEntity extends Link<Void> {
+    private static final class LinkEntity extends Link<Void> {
         private final Serializable referent;
         public LinkEntity(final Serializable referent) {
             super("link");
@@ -184,8 +189,4 @@ public class PageView extends BasePage {
     private static Props props() {
         return ((App)Application.get()).props();
     }
-
-
-
-    private final Serializable entity;
 }
