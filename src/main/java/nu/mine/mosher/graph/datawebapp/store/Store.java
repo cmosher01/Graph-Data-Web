@@ -1,6 +1,6 @@
 package nu.mine.mosher.graph.datawebapp.store;
 
-import org.apache.wicket.model.PropertyModel;
+import nu.mine.mosher.graph.datawebapp.util.Utils;
 import org.neo4j.graphdb.GraphDatabaseService;
 import org.neo4j.graphdb.factory.GraphDatabaseFactory;
 import org.neo4j.ogm.config.Configuration;
@@ -15,6 +15,7 @@ import java.util.stream.Collectors;
 
 @SuppressWarnings({"rawtypes", "unchecked"})
 public class Store {
+
     private final Map<String, Session> cacheSession = new ConcurrentHashMap<>();
 
     private final SessionFactory factorySession;
@@ -24,9 +25,10 @@ public class Store {
             newEmbeddedDatabaseBuilder(new File("database")).
             newGraphDatabase();
 
-        final Configuration configuration = new Configuration.Builder().build();
+        final Configuration configuration = new Configuration.Builder().useNativeTypes().build();
         final EmbeddedDriver driver = new EmbeddedDriver(db, configuration);
         this.factorySession = new SessionFactory(driver, packages);
+        this.factorySession.register(new Utils.UtcModifiedUpdater());
     }
 
     public boolean isEntity(final Class cls) {
@@ -60,23 +62,5 @@ public class Store {
 
     public void dropSession(final String id) {
         cacheSession.remove(id);
-    }
-
-    public static Serializable create(final Class cls) {
-        try {
-            return uuidstamp(Arrays.
-                stream(cls.getDeclaredConstructors()).
-                filter(c -> c.getGenericParameterTypes().length == 0).
-                findAny().
-                orElseThrow().
-                newInstance());
-        } catch (final Throwable e) {
-            throw new IllegalStateException(e);
-        }
-    }
-
-    private static Serializable uuidstamp(final Object entity) {
-        new PropertyModel<>(entity, "uuid").setObject(UUID.randomUUID());
-        return (Serializable)entity;
     }
 }

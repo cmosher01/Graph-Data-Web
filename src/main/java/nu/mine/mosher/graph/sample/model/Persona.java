@@ -5,6 +5,7 @@ import org.neo4j.ogm.annotation.typeconversion.Convert;
 import org.neo4j.ogm.typeconversion.UuidStringConverter;
 
 import java.io.Serializable;
+import java.time.ZonedDateTime;
 import java.util.*;
 
 @NodeEntity(label=Persona.TYPE)
@@ -14,6 +15,8 @@ public class Persona implements Serializable {
     @Id @GeneratedValue Long id;
     @Version Long version;
     @Convert(UuidStringConverter.class) @Index(unique=true) @Id UUID uuid;
+    @Index() ZonedDateTime utcCreated;
+    @Index() ZonedDateTime utcModified;
 
     @Property String description;
 

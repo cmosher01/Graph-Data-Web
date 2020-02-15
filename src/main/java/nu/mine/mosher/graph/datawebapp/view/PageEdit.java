@@ -1,6 +1,5 @@
 package nu.mine.mosher.graph.datawebapp.view;
 
-import nu.mine.mosher.graph.datawebapp.store.Store;
 import nu.mine.mosher.graph.datawebapp.util.Utils;
 import org.apache.wicket.Component;
 import org.apache.wicket.markup.html.basic.Label;
@@ -19,7 +18,7 @@ public class PageEdit extends BasePage {
 
     public PageEdit(Class cls, UUID uuid) {
         this.isNew = Objects.isNull(uuid);
-        this.entity = this.isNew ? Store.create(cls) : (Serializable)ogm().load(cls, uuid);
+        this.entity = this.isNew ? Utils.create(cls) : (Serializable)ogm().load(cls, uuid);
         add(new Label("entity", cls.getSimpleName()));
         add(new FormEntity());
     }
