@@ -6,13 +6,13 @@ import org.neo4j.ogm.annotation.*;
 import java.io.Serializable;
 import java.util.*;
 
-@NodeEntity(label=Persona.TYPE)
-public class Persona extends GraphEntity implements Serializable {
-    public static final String TYPE = "Persona";
+@NodeEntity(label=Place.TYPE)
+public class Place extends GraphEntity implements Serializable {
+    public static final String TYPE = "Place";
 
     @Property public String description;
 
-    @Relationship(type=Role.TYPE) public TreeSet<Role> hadRolesIn = new TreeSet<>();
+    @Relationship(type=At.TYPE, direction=Relationship.INCOMING) public TreeSet<At> events = new TreeSet<>();
 
     @Override
     public String toString() {

@@ -8,7 +8,6 @@ import java.io.Serializable;
 @RelationshipEntity(type=Role.TYPE)
 public class Role extends GraphEntity implements Serializable, Comparable<Role> {
     public static final String TYPE = "Role";
-    private static final long serialVersionUID = 1L;
 
     @Property public String description;
 
