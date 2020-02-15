@@ -10,6 +10,7 @@ import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.link.Link;
 
 import java.text.SimpleDateFormat;
+import java.time.*;
 import java.util.Date;
 
 public abstract class BasePage extends WebPage {
@@ -20,7 +21,7 @@ public abstract class BasePage extends WebPage {
                 setResponsePage(Application.get().getHomePage());
             }
         });
-        add(new Label("timeStamp", new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ").format(new Date())));
+        add(new Label("timeStamp", ZonedDateTime.now(ZoneOffset.UTC)));
     }
 
     @Override

@@ -5,7 +5,7 @@
     class="fontFeatures unicodeWebFonts solarizedLight"
 >
     <wicket:head>
-        <title>My first Wicket web application</title>
+        <title>Example of a Graph-Data-Web application</title>
         <wicket:link>
             <link rel="stylesheet" type="text/css" href="style.css"/>
         </wicket:link>
@@ -13,7 +13,7 @@
     <body>
         <header>
             <nav>
-                <a wicket:id="home">home</a>
+                <a wicket:id="home">{home}</a>
             </nav>
             <hr/>
         </header>
