@@ -1,12 +1,12 @@
-package nu.mine.mosher.app;
+package nu.mine.mosher.graph.datawebapp;
 
-import nu.mine.mosher.store.Store;
-import nu.mine.mosher.util.Props;
-import nu.mine.mosher.view.PageHome;
+import nu.mine.mosher.graph.datawebapp.store.Store;
+import nu.mine.mosher.graph.datawebapp.util.Props;
+import nu.mine.mosher.graph.datawebapp.view.PageHome;
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.protocol.http.WebApplication;
 
-public class App extends WebApplication {
+public class GraphDataWebApp extends WebApplication {
     private Store store;
     private Props props;
 

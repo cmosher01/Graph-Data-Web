@@ -1,4 +1,4 @@
-package nu.mine.mosher.app.sample;
+package nu.mine.mosher.graph.sample.model;
 
 import org.neo4j.ogm.annotation.*;
 import org.neo4j.ogm.annotation.typeconversion.Convert;
@@ -19,21 +19,8 @@ public class Persona implements Serializable {
 
     @Relationship(type=Role.TYPE) TreeSet<Role> hadRolesIn = new TreeSet<>();
 
-//    Persona() {
-//    }
-//
-//    Persona(final String description) {
-//        this.description = description;
-//        this.uuid = UUID.randomUUID();
-//    }
-
     @Override
     public String toString() {
         return this.description;
     }
-
-//    @Override
-//    public String toString() {
-//        return String.format("%s{id=%d,version=%d,uuid=%s,description=%s}", TYPE, id, version, uuid, description);
-//    }
 }

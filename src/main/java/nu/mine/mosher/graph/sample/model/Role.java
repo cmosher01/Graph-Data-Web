@@ -1,4 +1,4 @@
-package nu.mine.mosher.app.sample;
+package nu.mine.mosher.graph.sample.model;
 
 import org.neo4j.ogm.annotation.*;
 import org.neo4j.ogm.annotation.typeconversion.Convert;
@@ -19,21 +19,6 @@ public class Role implements Serializable, Comparable<Role> {
 
     @StartNode Persona persona;
     @EndNode Event event;
-
-//    Role() {
-//    }
-//
-//    Role(String description, Persona persona, Event event) {
-//        this.description = description;
-//        this.uuid = UUID.randomUUID();
-//        this.persona = persona;
-//        this.event = event;
-//    }
-
-//    @Override
-//    public String toString() {
-//        return String.format("%s{id=%d,version=%d,uuid=%s,description=%s}", TYPE, id, version, uuid, description);
-//    }
 
     @Override
     public String toString() {

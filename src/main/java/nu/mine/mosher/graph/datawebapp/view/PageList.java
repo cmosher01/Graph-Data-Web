@@ -1,6 +1,6 @@
-package nu.mine.mosher.view;
+package nu.mine.mosher.graph.datawebapp.view;
 
-import nu.mine.mosher.util.Utils;
+import nu.mine.mosher.graph.datawebapp.util.Utils;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.markup.html.list.*;

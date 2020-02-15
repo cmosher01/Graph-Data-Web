@@ -1,8 +1,8 @@
-package nu.mine.mosher.view;
+package nu.mine.mosher.graph.datawebapp.view;
 
-import nu.mine.mosher.app.App;
-import nu.mine.mosher.store.Store;
-import nu.mine.mosher.util.Props;
+import nu.mine.mosher.graph.datawebapp.GraphDataWebApp;
+import nu.mine.mosher.graph.datawebapp.store.Store;
+import nu.mine.mosher.graph.datawebapp.util.Props;
 import org.apache.wicket.Application;
 import org.apache.wicket.markup.MarkupType;
 import org.apache.wicket.markup.html.WebPage;
@@ -33,10 +33,10 @@ public abstract class BasePage extends WebPage {
     }
 
     protected Store store() {
-        return ((App)Application.get()).store();
+        return ((GraphDataWebApp)Application.get()).store();
     }
 
     protected Props props() {
-        return ((App)Application.get()).props();
+        return ((GraphDataWebApp)Application.get()).props();
     }
 }

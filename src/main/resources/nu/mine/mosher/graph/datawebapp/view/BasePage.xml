@@ -15,7 +15,6 @@
             <nav>
                 <a wicket:id="home">home</a>
             </nav>
-            <small>GenealDB (the genealogy research database)</small>
             <hr/>
         </header>
         <wicket:child/>

@@ -9,11 +9,11 @@
         <filter-class>org.apache.wicket.protocol.http.WicketFilter</filter-class>
         <init-param>
             <param-name>applicationClassName</param-name>
-            <param-value>nu.mine.mosher.app.App</param-value>
+            <param-value>nu.mine.mosher.graph.datawebapp.GraphDataWebApp</param-value>
         </init-param>
         <init-param>
             <param-name>packages</param-name>
-            <param-value>nu.mine.mosher.app.sample</param-value>
+            <param-value>nu.mine.mosher.graph.sample.model</param-value>
         </init-param>
     </filter>
 

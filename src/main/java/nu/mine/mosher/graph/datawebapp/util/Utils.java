@@ -1,4 +1,4 @@
-package nu.mine.mosher.util;
+package nu.mine.mosher.graph.datawebapp.util;
 
 
 import org.apache.wicket.model.PropertyModel;

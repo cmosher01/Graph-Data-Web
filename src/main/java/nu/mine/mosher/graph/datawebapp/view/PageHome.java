@@ -1,4 +1,4 @@
-package nu.mine.mosher.view;
+package nu.mine.mosher.graph.datawebapp.view;
 
 
 import org.apache.wicket.markup.html.basic.Label;

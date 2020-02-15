@@ -1,6 +1,6 @@
-package nu.mine.mosher.util;
+package nu.mine.mosher.graph.datawebapp.util;
 
-import nu.mine.mosher.store.Store;
+import nu.mine.mosher.graph.datawebapp.store.Store;
 
 import java.io.Serializable;
 import java.lang.reflect.*;

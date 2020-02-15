@@ -1,4 +1,4 @@
-package nu.mine.mosher.store;
+package nu.mine.mosher.graph.datawebapp.store;
 
 import org.apache.wicket.model.PropertyModel;
 import org.neo4j.graphdb.GraphDatabaseService;
@@ -7,7 +7,6 @@ import org.neo4j.ogm.config.Configuration;
 import org.neo4j.ogm.drivers.embedded.driver.EmbeddedDriver;
 import org.neo4j.ogm.metadata.ClassInfo;
 import org.neo4j.ogm.session.*;
-import org.slf4j.*;
 
 import java.io.*;
 import java.util.*;
@@ -16,9 +15,7 @@ import java.util.stream.Collectors;
 
 @SuppressWarnings({"rawtypes", "unchecked"})
 public class Store {
-    private static final Map<String, Session> cacheSession = new ConcurrentHashMap<>();
-
-    private final Logger LOG = LoggerFactory.getLogger(Store.class);
+    private final Map<String, Session> cacheSession = new ConcurrentHashMap<>();
 
     private final SessionFactory factorySession;
 
@@ -54,9 +51,7 @@ public class Store {
 
     public Collection getAll(final Class cls) {
         final Session session = this.factorySession.openSession();
-        final Collection entities = Objects.requireNonNull(session.loadAll(cls, 1));
-        entities.forEach(e -> LOG.info("Loaded {}", e));
-        return entities;
+        return Objects.requireNonNull(session.loadAll(cls, 1));
     }
 
     public Session getSession(final String id) {
