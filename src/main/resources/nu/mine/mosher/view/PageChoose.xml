@@ -4,12 +4,11 @@
     <ul>
         <li wicket:id="list">
             <a wicket:id="link">
-                <span wicket:id="display"/>
+                <span wicket:id="entity"/>
             </a>
         </li>
     </ul>
     <span wicket:id="empty"/>
-    <!-- add new ? -->
     <p>
         <a wicket:id="cancel">{cancel}</a>
     </p>

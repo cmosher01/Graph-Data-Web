@@ -1,5 +1,8 @@
 package nu.mine.mosher.view;
 
+import nu.mine.mosher.app.App;
+import nu.mine.mosher.store.Store;
+import nu.mine.mosher.util.Props;
 import org.apache.wicket.Application;
 import org.apache.wicket.markup.MarkupType;
 import org.apache.wicket.markup.html.WebPage;
@@ -23,5 +26,17 @@ public abstract class BasePage extends WebPage {
     @Override
     public MarkupType getMarkupType() {
         return new MarkupType(".xml", MarkupType.XML_MIME);
+    }
+
+    protected org.neo4j.ogm.session.Session ogm() {
+        return store().getSession(getSession().getId());
+    }
+
+    protected Store store() {
+        return ((App)Application.get()).store();
+    }
+
+    protected Props props() {
+        return ((App)Application.get()).props();
     }
 }

@@ -155,7 +155,6 @@ public class PageView extends BasePage {
             }
             try {
                 ogm().save(entity);
-                store().dropSession(getSession().getId());
                 setResponsePage(new PageView(entity.getClass(), Utils.uuid(entity)));
             } catch (Throwable e) {
                 e.printStackTrace();
@@ -176,17 +175,5 @@ public class PageView extends BasePage {
         public void onClick() {
             setResponsePage(new PageView(this.referent.getClass(), Utils.uuid(this.referent)));
         }
-    }
-
-    private org.neo4j.ogm.session.Session ogm() {
-        return store().getSession(getSession().getId());
-    }
-
-    private static Store store() {
-        return ((App)Application.get()).store();
-    }
-
-    private static Props props() {
-        return ((App)Application.get()).props();
     }
 }

@@ -1,9 +1,8 @@
 package nu.mine.mosher.view;
 
-import nu.mine.mosher.app.App;
 import nu.mine.mosher.store.Store;
-import nu.mine.mosher.util.*;
-import org.apache.wicket.*;
+import nu.mine.mosher.util.Utils;
+import org.apache.wicket.Component;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.*;
 import org.apache.wicket.markup.html.list.*;
@@ -14,6 +13,10 @@ import java.util.*;
 
 @SuppressWarnings({"rawtypes", "unchecked"})
 public class PageEdit extends BasePage {
+    private final Serializable entity;
+    private boolean isNew;
+    private boolean isBad;
+
     public PageEdit(Class cls, UUID uuid) {
         this.isNew = Objects.isNull(uuid);
         this.entity = this.isNew ? Store.create(cls) : (Serializable)ogm().load(cls, uuid);
@@ -80,20 +83,4 @@ public class PageEdit extends BasePage {
             }
         }
     }
-
-    private org.neo4j.ogm.session.Session ogm() {
-        return store().getSession(getSession().getId());
-    }
-
-    private static Store store() {
-        return ((App)Application.get()).store();
-    }
-
-    private static Props props() {
-        return ((App)Application.get()).props();
-    }
-
-    private final Serializable entity;
-    private boolean isNew;
-    private boolean isBad;
 }

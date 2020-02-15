@@ -11,6 +11,10 @@
             <param-name>applicationClassName</param-name>
             <param-value>nu.mine.mosher.app.App</param-value>
         </init-param>
+        <init-param>
+            <param-name>packages</param-name>
+            <param-value>nu.mine.mosher.app.sample</param-value>
+        </init-param>
     </filter>
 
     <filter-mapping>

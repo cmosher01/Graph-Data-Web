@@ -1,9 +1,6 @@
 package nu.mine.mosher.view;
 
-import nu.mine.mosher.app.App;
-import nu.mine.mosher.store.Store;
 import nu.mine.mosher.util.*;
-import org.apache.wicket.*;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.markup.html.list.*;
@@ -26,7 +23,6 @@ public class PageChoose extends BasePage {
         add(new Label("entity", ref.name+":"+ref.cls.getSimpleName()));
         add(new ListEntity(candidates));
         add(new Label("empty", Model.of("[none]")).setVisible(store().count(ref.cls) == 0L));
-//        add(new LinkNew());
         add(new Link<Void>("cancel") {
             @Override
             public void onClick() {
@@ -52,7 +48,7 @@ public class PageChoose extends BasePage {
             public LinkEntity(final Serializable child) {
                 super("link");
                 this.child = child;
-                add(new Label("display", Utils.str(child)));
+                add(new Label("entity", Utils.str(child)));
             }
 
             @Override
@@ -73,28 +69,5 @@ public class PageChoose extends BasePage {
                 }
             }
         }
-    }
-
-
-//    private final class LinkNew extends Link<Void> {
-//        public LinkNew() {
-//            super("new");
-//        }
-//
-//        @Override
-//        public void onClick() {
-//            TODO how will this work?
-//            setResponsePage(new PageEdit(cls, null));
-//        }
-//    }
-
-
-
-    private org.neo4j.ogm.session.Session ogm() {
-        return store().getSession(getSession().getId());
-    }
-
-    private static Store store() {
-        return ((App)Application.get()).store();
     }
 }

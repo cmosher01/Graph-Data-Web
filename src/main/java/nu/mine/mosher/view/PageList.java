@@ -1,9 +1,6 @@
 package nu.mine.mosher.view;
 
-import nu.mine.mosher.app.App;
-import nu.mine.mosher.store.Store;
 import nu.mine.mosher.util.Utils;
-import org.apache.wicket.*;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.markup.html.list.*;
@@ -62,9 +59,5 @@ public class PageList extends BasePage {
         public void onClick() {
             setResponsePage(new PageEdit(cls, null));
         }
-    }
-
-    private static Store store() {
-        return ((App)Application.get()).store();
     }
 }
