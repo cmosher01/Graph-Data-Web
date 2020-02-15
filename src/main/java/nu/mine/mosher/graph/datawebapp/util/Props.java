@@ -16,10 +16,7 @@ import java.util.stream.*;
  * 2. singular references (to entity objects)
  * 3. multiple references (Collection<Entity>)
  *
- * Ignore: arrays, Collections of non-entities, static fields, transient fields,
- * the "id"field
- *
- * TODO: handle Optional<> ?
+ * Ignore: arrays, Collections of non-entities, static fields, Optional fields
  *
  */
 @SuppressWarnings("rawtypes")
@@ -30,10 +27,21 @@ public final class Props {
         this.store = store;
     }
 
+    public static class Prop implements Serializable {
+        private static final long serialVersionUID = 1L;
+        public final String name;
+        public final boolean readOnly;
+
+        public Prop(final String name, final boolean readOnly) {
+            this.name = name;
+            this.readOnly = readOnly;
+        }
+    }
+
     public static class Ref implements Serializable {
         private static final long serialVersionUID = 1L;
         public final String name;
-        public final Class cls; //entity class
+        public final Class cls;
         public final boolean collection;
 
         private Ref(final String name, final Class cls, final boolean collection) {
@@ -63,11 +71,11 @@ public final class Props {
 
     // 1. primitive (non-entity objects) scalar values
     // returns a list of the names of those properties
-    public List<String> properties(final Class cls) {
+    public List<Prop> properties(final Class cls) {
         return
             scalars(cls).
             filter(f -> !isEntity(f.getType())).
-            map(Field::getName).
+            map(f -> new Prop(f.getName(), f.isAnnotationPresent(ReadOnly.class))).
             collect(Collectors.toList());
     }
 
@@ -77,10 +85,10 @@ public final class Props {
 
     private static Stream<Field> scalars(final Class cls) {
         return
-        props(cls).
-        filter(f -> !f.getType().isArray()).
-        filter(f -> !Collection.class.isAssignableFrom(f.getType())).
-        filter(f -> !Optional.class.isAssignableFrom(f.getType()));
+            props(cls).
+            filter(f -> !f.getType().isArray()).
+            filter(f -> !Collection.class.isAssignableFrom(f.getType())).
+            filter(f -> !Optional.class.isAssignableFrom(f.getType()));
     }
 
     private static Stream<Field> collections(final Class cls) {
@@ -90,14 +98,11 @@ public final class Props {
     }
 
     private static Stream<Field> props(final Class cls) {
-        return Arrays.
-            stream(cls.getDeclaredFields()).
-            filter(f -> !f.getName().equals("id")).
-            filter(f -> !f.getName().equals("version")).
-            filter(f -> !f.getName().equals("uuid")).
+        return
+            Arrays.
+            stream(cls.getFields()).
             filter(f -> !f.isSynthetic()).
-            filter(f -> !Modifier.isStatic(f.getModifiers())).
-            filter(f -> !Modifier.isTransient(f.getModifiers()));
+            filter(f -> !Modifier.isStatic(f.getModifiers()));
     }
 
     private static Class getGenType(final Field field) {

@@ -1,11 +1,9 @@
 package nu.mine.mosher.graph.sample.model;
 
+import nu.mine.mosher.graph.datawebapp.util.GraphEntity;
 import org.neo4j.ogm.annotation.*;
-import org.neo4j.ogm.annotation.typeconversion.Convert;
-import org.neo4j.ogm.typeconversion.UuidStringConverter;
 
 import java.io.Serializable;
-import java.time.ZonedDateTime;
 import java.util.*;
 
 /*
@@ -19,18 +17,13 @@ import java.util.*;
  */
 
 @NodeEntity(label=Event.TYPE)
-public class Event implements Serializable {
+public class Event extends GraphEntity implements Serializable {
     public static final String TYPE = "Event";
     private static final long serialVersionUID = 1L;
-    @Id @GeneratedValue Long id;
-    @Version Long version;
-    @Convert(UuidStringConverter.class) @Index(unique=true) @Id UUID uuid;
-    @Index() ZonedDateTime utcCreated;
-    @Index() ZonedDateTime utcModified;
 
-    @Property String description;
+    @Property public String description;
 
-    @Relationship(type=Role.TYPE, direction=Relationship.INCOMING) TreeSet<Role> players = new TreeSet<>();
+    @Relationship(type=Role.TYPE, direction=Relationship.INCOMING) public TreeSet<Role> players = new TreeSet<>();
 
     @Override
     public String toString() {

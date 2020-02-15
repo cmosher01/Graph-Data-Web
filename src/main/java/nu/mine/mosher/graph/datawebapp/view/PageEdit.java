@@ -1,6 +1,6 @@
 package nu.mine.mosher.graph.datawebapp.view;
 
-import nu.mine.mosher.graph.datawebapp.util.Utils;
+import nu.mine.mosher.graph.datawebapp.util.*;
 import org.apache.wicket.Component;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.*;
@@ -8,6 +8,7 @@ import org.apache.wicket.markup.html.list.*;
 import org.apache.wicket.model.*;
 
 import java.io.Serializable;
+import java.lang.reflect.Field;
 import java.util.*;
 
 @SuppressWarnings({"rawtypes", "unchecked"})
@@ -31,13 +32,14 @@ public class PageEdit extends BasePage {
 
             add(new ListView<>("properties", props().properties(entity.getClass())) {
                 @Override
-                protected void populateItem(final ListItem<String> item) {
-                    final String nameProperty = item.getModelObject();
+                protected void populateItem(final ListItem<Props.Prop> item) {
+                    final Props.Prop prop = item.getModelObject();
 
-                    final Component name = new Label("name", nameProperty).setRenderBodyOnly(true);
+                    final Component name = new Label("name", prop.name).setRenderBodyOnly(true);
 
-                    final PropertyModel model = new PropertyModel<>(entity, nameProperty);
+                    final PropertyModel model = new PropertyModel<>(entity, prop.name);
                     final LabeledWebMarkupContainer property = new TextField<String>("property", model);
+                    property.setEnabled(!prop.readOnly);
 
                     final FormComponentLabel label = new FormComponentLabel("label", property);
                     label.add(name);

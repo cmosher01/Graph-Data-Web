@@ -1,5 +1,6 @@
 package nu.mine.mosher.graph.datawebapp.store;
 
+import nu.mine.mosher.graph.datawebapp.util.*;
 import nu.mine.mosher.graph.datawebapp.util.Utils;
 import org.neo4j.graphdb.GraphDatabaseService;
 import org.neo4j.graphdb.factory.GraphDatabaseFactory;
@@ -13,7 +14,7 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
-@SuppressWarnings({"rawtypes", "unchecked"})
+@SuppressWarnings("rawtypes")
 public class Store {
 
     private final Map<String, Session> cacheSession = new ConcurrentHashMap<>();
@@ -21,11 +22,16 @@ public class Store {
     private final SessionFactory factorySession;
 
     public Store(final String... packages) {
-        final GraphDatabaseService db = new GraphDatabaseFactory().
+        final GraphDatabaseService db =
+            new GraphDatabaseFactory().
             newEmbeddedDatabaseBuilder(new File("database")).
             newGraphDatabase();
 
-        final Configuration configuration = new Configuration.Builder().useNativeTypes().build();
+        final Configuration configuration =
+            new Configuration.Builder().
+            useNativeTypes().
+            strictQuerying().
+            build();
         final EmbeddedDriver driver = new EmbeddedDriver(db, configuration);
         this.factorySession = new SessionFactory(driver, packages);
         this.factorySession.register(new Utils.UtcModifiedUpdater());
@@ -43,6 +49,7 @@ public class Store {
             persistentEntities().
             stream().
             map(ClassInfo::getUnderlyingClass).
+            filter(c -> !c.equals(GraphEntity.class)).
             collect(Collectors.toUnmodifiableList());
     }
 
@@ -51,6 +58,7 @@ public class Store {
         return session.countEntitiesOfType(cls);
     }
 
+    @SuppressWarnings("unchecked")
     public Collection getAll(final Class cls) {
         final Session session = this.factorySession.openSession();
         return Objects.requireNonNull(session.loadAll(cls, 1));

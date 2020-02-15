@@ -6,7 +6,7 @@
     <ul>
         <li wicket:id="properties">
             <wicket:container wicket:id="name"/>:
-            <span wicket:id="property"/>
+            <b><span wicket:id="property"/></b>
         </li>
     </ul>
 
@@ -16,7 +16,7 @@
             <ul style="margin-left: 0; padding-left: 40px;">
                 <li wicket:id="ref">
                     <a wicket:id="link">
-                        <span wicket:id="display"/>
+                        <b><span wicket:id="display"/></b>
                     </a>
                     <a wicket:id="remove">{unlink}</a>
                 </li>
@@ -28,7 +28,7 @@
         <li wicket:id="refsSingular">
             <wicket:container wicket:id="name"/>:
             <a wicket:id="link">
-                <span wicket:id="display"/>
+                <b><span wicket:id="display"/></b>
             </a>
             <a wicket:id="remove">{unlink}</a>
             <span wicket:id="empty"/>

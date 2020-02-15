@@ -5,6 +5,7 @@ import org.apache.wicket.model.PropertyModel;
 import org.neo4j.ogm.session.event.*;
 
 import java.io.Serializable;
+import java.lang.reflect.InvocationTargetException;
 import java.time.*;
 import java.util.*;
 
@@ -17,17 +18,24 @@ public final class Utils {
         }
     }
 
+    @SuppressWarnings("rawtypes")
     public static Serializable create(final Class cls) {
         try {
-            return initEntity(Arrays.
-                stream(cls.getDeclaredConstructors()).
-                filter(c -> c.getGenericParameterTypes().length == 0).
-                findAny().
-                orElseThrow().
-                newInstance());
+            return initEntity(instance(cls));
         } catch (final Throwable e) {
             throw new IllegalStateException(e);
         }
+    }
+
+    @SuppressWarnings("rawtypes")
+    private static Object instance(final Class cls) throws IllegalAccessException, InvocationTargetException, InstantiationException {
+        return
+            Arrays.
+            stream(cls.getDeclaredConstructors()).
+            filter(c -> c.getGenericParameterTypes().length == 0).
+            findAny().
+            orElseThrow().
+            newInstance();
     }
 
     private Utils() {}

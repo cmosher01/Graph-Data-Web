@@ -1,27 +1,19 @@
 package nu.mine.mosher.graph.sample.model;
 
+import nu.mine.mosher.graph.datawebapp.util.GraphEntity;
 import org.neo4j.ogm.annotation.*;
-import org.neo4j.ogm.annotation.typeconversion.Convert;
-import org.neo4j.ogm.typeconversion.UuidStringConverter;
 
 import java.io.Serializable;
-import java.time.ZonedDateTime;
-import java.util.UUID;
 
 @RelationshipEntity(type=Role.TYPE)
-public class Role implements Serializable, Comparable<Role> {
+public class Role extends GraphEntity implements Serializable, Comparable<Role> {
     public static final String TYPE = "Role";
     private static final long serialVersionUID = 1L;
-    @Id @GeneratedValue Long id;
-    @Version Long version;
-    @Convert(UuidStringConverter.class) @Index(unique=true) @Id UUID uuid;
-    @Index() ZonedDateTime utcCreated;
-    @Index() ZonedDateTime utcModified;
 
-    @Property String description;
+    @Property public String description;
 
-    @StartNode Persona persona;
-    @EndNode Event event;
+    @StartNode public Persona persona;
+    @EndNode public Event event;
 
     @Override
     public String toString() {

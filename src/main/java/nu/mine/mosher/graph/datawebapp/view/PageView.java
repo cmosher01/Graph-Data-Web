@@ -8,6 +8,7 @@ import org.apache.wicket.markup.html.list.*;
 import org.apache.wicket.model.*;
 
 import java.io.Serializable;
+import java.lang.reflect.Field;
 import java.util.*;
 
 @SuppressWarnings({"rawtypes", "unchecked"})
@@ -47,8 +48,8 @@ public class PageView extends BasePage {
 
         add(new ListView<>("properties", props().properties(entity.getClass())) {
             @Override
-            protected void populateItem(final ListItem<String> item) {
-                final String nameProperty = item.getModelObject();
+            protected void populateItem(final ListItem<Props.Prop> item) {
+                final String nameProperty = item.getModelObject().name;
                 item.add(new Label("name", nameProperty).setRenderBodyOnly(true));
                 item.add(new Label("property", new PropertyModel<>(entity, nameProperty)));
             }
