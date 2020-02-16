@@ -11,10 +11,14 @@
             <param-name>applicationClassName</param-name>
             <param-value>nu.mine.mosher.graph.datawebapp.GraphDataWebApp</param-value>
         </init-param>
-        <init-param>
-            <param-name>packages</param-name>
-            <param-value>nu.mine.mosher.graph.sample.model</param-value>
-        </init-param>
+<!--        <init-param>-->
+<!--            <param-name>packages</param-name>-->
+<!--            <param-value>com.example.model</param-value>-->
+<!--        </init-param>-->
+<!--        <init-param>-->
+<!--            <param-name>stylesheet</param-name>-->
+<!--            <param-value>https://mosher.mine.nu/uniwebfonts/test/test.css</param-value>-->
+<!--        </init-param>-->
     </filter>
 
     <filter-mapping>

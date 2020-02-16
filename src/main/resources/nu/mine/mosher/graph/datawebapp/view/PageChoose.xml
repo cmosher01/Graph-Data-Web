@@ -3,13 +3,11 @@
     <h3 wicket:id="entity"/>
     <ul>
         <li wicket:id="list">
-            <a wicket:id="link">
-                <span wicket:id="entity"/>
-            </a>
+            <a wicket:id="link"><span wicket:id="entity"/></a>
         </li>
     </ul>
     <span wicket:id="empty"/>
     <p>
-        <a wicket:id="cancel">{cancel}</a>
+        <button wicket:id="cancel"><wicket:message key="cancel"/></button>
     </p>
 </wicket:extend>

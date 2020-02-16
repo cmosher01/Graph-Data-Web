@@ -5,22 +5,22 @@
     class="fontFeatures unicodeWebFonts solarizedLight"
 >
     <wicket:head>
-        <title>Example of a Graph-Data-Web application</title>
-        <wicket:link>
-            <link rel="stylesheet" type="text/css" href="style.css"/>
-        </wicket:link>
+        <title wicket:id="title"/>
     </wicket:head>
     <body>
         <header>
             <nav>
-                <a wicket:id="home">{home}</a>
+                <button wicket:id="home"><wicket:message key="home"/></button>
             </nav>
             <hr/>
         </header>
         <wicket:child/>
         <footer>
             <hr/>
-            <small>This page generated at: <wicket:container wicket:id="timeStamp" id="timeStamp"/>.</small>
+            <small>
+                <wicket:container wicket:id="timeStamp" id="timeStamp"/>
+                <a href="https://github.com/cmosher01/Graph-Data-Web">graph-data-web</a>
+            </small>
         </footer>
     </body>
 </html>

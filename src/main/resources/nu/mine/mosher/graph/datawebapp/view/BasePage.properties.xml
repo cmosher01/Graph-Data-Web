@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+    <entry key="home">home</entry>
+    <entry key="new">new</entry>
+    <entry key="delete">delete</entry>
+    <entry key="list">list</entry>
+    <entry key="edit">edit</entry>
+    <entry key="add">add link</entry>
+    <entry key="remove">unlink</entry>
+    <entry key="cancel">cancel</entry>
+</properties>

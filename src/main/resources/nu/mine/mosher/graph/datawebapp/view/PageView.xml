@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <wicket:extend xmlns="http://www.w3.org/1999/xhtml" xmlns:wicket="http://wicket.apache.org">
-    <a wicket:id="list">{list}</a>
+    <button wicket:id="list"><wicket:message key="list"/></button>
     <h3 wicket:id="entity"/>
-    <a wicket:id="edit">{edit}</a>
+    <button wicket:id="edit"><wicket:message key="edit"/></button>
     <ul>
         <li wicket:id="properties">
             <wicket:container wicket:id="name"/>:
@@ -15,27 +15,25 @@
             <wicket:container wicket:id="name"/>:
             <ul style="margin-left: 0; padding-left: 40px;">
                 <li wicket:id="ref">
-                    <a wicket:id="link">
-                        <b><span wicket:id="display"/></b>
-                    </a>
-                    <a wicket:id="remove">{unlink}</a>
+                    <a wicket:id="link"> <b><span wicket:id="display"/></b></a>
+                    <button wicket:id="remove"><wicket:message key="remove"/></button>
                 </li>
                 <li wicket:id="empty"/>
+                <li>
+                    <button wicket:id="add"><wicket:message key="add"/></button>
+                </li>
             </ul>
-            <a style="margin-left: 0; padding-left: 40px;" wicket:id="add">{add link}</a>
         </li>
 
         <li wicket:id="refsSingular">
             <wicket:container wicket:id="name"/>:
-            <a wicket:id="link">
-                <b><span wicket:id="display"/></b>
-            </a>
-            <a wicket:id="remove">{unlink}</a>
+            <a wicket:id="link"><b><span wicket:id="display"/></b></a>
+            <button wicket:id="remove"><wicket:message key="remove"/></button>
             <span wicket:id="empty"/>
-            <a wicket:id="add">{add link}</a>
+            <button wicket:id="add"><wicket:message key="add"/></button>
         </li>
     </ul>
     <p>
-        <a wicket:id="delete">{delete}</a>
+        <button wicket:id="delete"><wicket:message key="delete"/></button>
     </p>
 </wicket:extend>

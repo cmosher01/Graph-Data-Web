@@ -38,6 +38,7 @@ public class PageEdit extends BasePage {
                     final Component name = new Label("name", prop.name).setRenderBodyOnly(true);
 
                     final PropertyModel model = new PropertyModel<>(entity, prop.name);
+                    // TODO check datatype here:
                     final LabeledWebMarkupContainer property = new TextField<String>("property", model);
                     property.setEnabled(!prop.readOnly);
 

@@ -11,6 +11,7 @@ public class Place extends GraphEntity implements Serializable {
     public static final String TYPE = "Place";
 
     @Property public String description;
+    @Property public boolean defunct;
 
     @Relationship(type=At.TYPE, direction=Relationship.INCOMING) public TreeSet<At> events = new TreeSet<>();
 
