@@ -57,7 +57,6 @@ public class PageChoose extends BasePage {
                     ((Collection)new PropertyModel<>(parent, ref.name).getObject()).add(child);
                 } else {
                     new PropertyModel<>(parent, ref.name).setObject(child);
-                    ogm().delete(parent);
                 }
                 try {
                     ogm().save(Utils.resetEntity(parent));
