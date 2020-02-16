@@ -28,18 +28,18 @@ public final class Props {
     }
 
     public static class Prop implements Serializable {
-        private static final long serialVersionUID = 1L;
         public final String name;
         public final boolean readOnly;
+        public final boolean isBoolean;
 
-        public Prop(final String name, final boolean readOnly) {
+        public Prop(final String name, final boolean readOnly, final boolean isBoolean) {
             this.name = name;
             this.readOnly = readOnly;
+            this.isBoolean = isBoolean;
         }
     }
 
     public static class Ref implements Serializable {
-        private static final long serialVersionUID = 1L;
         public final String name;
         public final Class cls;
         public final boolean collection;
@@ -75,8 +75,12 @@ public final class Props {
         return
             scalars(cls).
             filter(f -> !isEntity(f.getType())).
-            map(f -> new Prop(f.getName(), f.isAnnotationPresent(ReadOnly.class))).
+            map(f -> new Prop(f.getName(), f.isAnnotationPresent(ReadOnly.class), isBoolean(f))).
             collect(Collectors.toList());
+    }
+
+    private static boolean isBoolean(Field f) {
+        return f.getType().equals(boolean.class) || Boolean.class.isAssignableFrom(f.getType());
     }
 
     private boolean isEntity(final Class cls) {

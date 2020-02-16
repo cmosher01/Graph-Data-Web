@@ -5,6 +5,7 @@ import org.apache.wicket.Component;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.*;
 import org.apache.wicket.markup.html.list.*;
+import org.apache.wicket.markup.html.panel.Fragment;
 import org.apache.wicket.model.*;
 
 import java.io.Serializable;
@@ -38,13 +39,23 @@ public class PageEdit extends BasePage {
                     final Component name = new Label("name", prop.name).setRenderBodyOnly(true);
 
                     final PropertyModel model = new PropertyModel<>(entity, prop.name);
-                    // TODO check datatype here:
-                    final LabeledWebMarkupContainer property = new TextField<String>("property", model);
-                    property.setEnabled(!prop.readOnly);
+                    final LabeledWebMarkupContainer property;
+                    final Fragment fragment;
+                    if (prop.isBoolean) {
+                        fragment = new Fragment("entry", "entryCheckbox", FormEntity.this);
+                        property = new CheckBox("property", model);
+                    } else {
+                        fragment = new Fragment("entry", "entryText", FormEntity.this);
+                        property = new TextField<String>("property", model);
+                    }
+                    if (prop.readOnly) {
+                        property.setEnabled(false);
+                    }
+                    fragment.add(property);
 
                     final FormComponentLabel label = new FormComponentLabel("label", property);
                     label.add(name);
-                    label.add(property);
+                    label.add(fragment);
 
                     item.add(label);
                 }

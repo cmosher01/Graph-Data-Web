@@ -2,17 +2,29 @@
 <wicket:extend xmlns="http://www.w3.org/1999/xhtml" xmlns:wicket="http://wicket.apache.org">
     <h3 wicket:id="entity"/>
     <form wicket:id="form">
+        <p>
+            <button wicket:id="cancel"><wicket:message key="cancel"/></button>
+        </p>
         <ul>
             <li wicket:id="properties">
                 <label wicket:id="label">
                     <wicket:container wicket:id="name"/>:
-                    <input wicket:id="property"/>
+                    <wicket:container wicket:id="entry"/>
                 </label>
             </li>
         </ul>
         <p>
-            <button wicket:id="cancel"><wicket:message key="cancel"/></button>
             <input type="submit" value="save"/>
         </p>
+
+
+
+        <wicket:fragment wicket:id="entryText">
+            <input wicket:id="property"/>
+        </wicket:fragment>
+
+        <wicket:fragment wicket:id="entryCheckbox">
+            <input type="checkbox" wicket:id="property"/>
+        </wicket:fragment>
     </form>
 </wicket:extend>
