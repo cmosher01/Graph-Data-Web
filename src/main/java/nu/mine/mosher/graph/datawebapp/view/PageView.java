@@ -2,6 +2,7 @@ package nu.mine.mosher.graph.datawebapp.view;
 
 import nu.mine.mosher.graph.datawebapp.util.*;
 import org.apache.wicket.Component;
+import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.markup.html.list.*;
@@ -50,7 +51,7 @@ public class PageView extends BasePage {
             @Override
             protected void populateItem(final ListItem<Props.Prop> item) {
                 final String nameProperty = item.getModelObject().name;
-                item.add(new Label("name", nameProperty).setRenderBodyOnly(true));
+                item.add(new Label("name", nameProperty));
                 item.add(new Label("property", new PropertyModel<>(entity, nameProperty)));
             }
         }.setReuseItems(true));
@@ -69,7 +70,7 @@ public class PageView extends BasePage {
 
                 final Collection referents = (Collection)new PropertyModel<>(entity, ref.name).getObject();
                 item.add(new ReferenceListView(ref, referents));
-                item.add(new Label("empty", Model.of("[none]")).setVisible(referents.size() == 0L));
+                item.add(new WebMarkupContainer("empty").setVisible(referents.size() == 0L));
 
                 // A relationship entity can never already be in existence, so we always need
                 // to make a new one here, rather than go to PageChooser
@@ -114,7 +115,7 @@ public class PageView extends BasePage {
                 item.add(new LinkEntity(referent).setVisible(Objects.nonNull(referent)));
 
                 item.add(new LinkRemove(ref, referent).setVisible(Objects.nonNull(referent)));
-                item.add(new Label("empty", Model.of("[none]")).setVisible(Objects.isNull(referent)));
+                item.add(new WebMarkupContainer("empty").setVisible(Objects.isNull(referent)));
 
                 item.add(new Link<Void>("add") {
                     @Override
@@ -167,7 +168,7 @@ public class PageView extends BasePage {
         public LinkEntity(final Serializable referent) {
             super("link");
             this.referent = referent;
-            add(new Label("display", Utils.str(referent)));
+            add(new Label("entity", Utils.str(referent)));
         }
 
         @Override

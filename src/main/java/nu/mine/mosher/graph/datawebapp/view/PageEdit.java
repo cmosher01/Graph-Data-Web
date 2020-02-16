@@ -36,7 +36,8 @@ public class PageEdit extends BasePage {
                 protected void populateItem(final ListItem<Props.Prop> item) {
                     final Props.Prop prop = item.getModelObject();
 
-                    final Component name = new Label("name", prop.name).setRenderBodyOnly(true);
+                    final Component name = new Label("name", prop.name);
+                    item.add(name);
 
                     final PropertyModel model = new PropertyModel<>(entity, prop.name);
                     final LabeledWebMarkupContainer property;
@@ -53,11 +54,7 @@ public class PageEdit extends BasePage {
                     }
                     fragment.add(property);
 
-                    final FormComponentLabel label = new FormComponentLabel("label", property);
-                    label.add(name);
-                    label.add(fragment);
-
-                    item.add(label);
+                    item.add(fragment);
                 }
             }.setReuseItems(true));
 

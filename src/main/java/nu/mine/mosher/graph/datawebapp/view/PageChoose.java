@@ -1,6 +1,7 @@
 package nu.mine.mosher.graph.datawebapp.view;
 
 import nu.mine.mosher.graph.datawebapp.util.*;
+import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.markup.html.list.*;
@@ -22,7 +23,7 @@ public class PageChoose extends BasePage {
         this.ref = ref;
         add(new Label("entity", ref.name+":"+ref.cls.getSimpleName()));
         add(new ListEntity(candidates));
-        add(new Label("empty", Model.of("[none]")).setVisible(store().count(ref.cls) == 0L));
+        add(new WebMarkupContainer("empty").setVisible(store().count(ref.cls) == 0L));
         add(new Link<Void>("cancel") {
             @Override
             public void onClick() {

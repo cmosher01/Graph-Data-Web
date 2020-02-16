@@ -1,6 +1,7 @@
 package nu.mine.mosher.graph.datawebapp.view;
 
 import nu.mine.mosher.graph.datawebapp.util.Utils;
+import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.markup.html.list.*;
@@ -17,7 +18,7 @@ public class PageList extends BasePage {
         this.cls = Objects.requireNonNull(cls);
         add(new Label("entity", cls.getSimpleName()));
         add(new ListEntity());
-        add(new Label("empty", Model.of("[none]")).setVisible(store().count(cls) == 0L));
+        add(new WebMarkupContainer("empty").setVisible(store().count(cls) == 0L));
         add(new LinkNew());
     }
 

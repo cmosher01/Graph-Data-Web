@@ -9,4 +9,5 @@
     <entry key="add">add link</entry>
     <entry key="remove">unlink</entry>
     <entry key="cancel">cancel</entry>
+    <entry key="empty">[none]</entry>
 </properties>

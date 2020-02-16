@@ -2,7 +2,7 @@
 <wicket:extend xmlns="http://www.w3.org/1999/xhtml" xmlns:wicket="http://wicket.apache.org">
     <ul>
         <li wicket:id="list">
-            <a wicket:id="link"><span wicket:id="entity"/></a>
+            <a wicket:id="link"><b><span wicket:id="entity"/></b></a>
         </li>
     </ul>
 </wicket:extend>

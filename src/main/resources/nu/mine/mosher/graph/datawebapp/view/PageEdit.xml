@@ -5,14 +5,18 @@
         <p>
             <button wicket:id="cancel"><wicket:message key="cancel"/></button>
         </p>
-        <ul>
-            <li wicket:id="properties">
-                <label wicket:id="label">
-                    <wicket:container wicket:id="name"/>:
-                    <wicket:container wicket:id="entry"/>
-                </label>
-            </li>
-        </ul>
+        <table style="width:100%">
+            <colgroup>
+                <col style="width:fit-content"/>
+                <col style="width:auto"/>
+            </colgroup>
+            <tbody>
+                <tr wicket:id="properties">
+                    <td><span wicket:id="name"/></td>
+                    <td><span wicket:id="entry"/></td>
+                </tr>
+            </tbody>
+        </table>
         <p>
             <input type="submit" value="save"/>
         </p>
@@ -20,7 +24,7 @@
 
 
         <wicket:fragment wicket:id="entryText">
-            <input wicket:id="property"/>
+            <input style="width:100%; font-family:unset; font-size:unset" wicket:id="property"/>
         </wicket:fragment>
 
         <wicket:fragment wicket:id="entryCheckbox">
