@@ -5,7 +5,6 @@ import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.markup.html.list.*;
-import org.apache.wicket.model.Model;
 
 import java.io.Serializable;
 import java.util.*;

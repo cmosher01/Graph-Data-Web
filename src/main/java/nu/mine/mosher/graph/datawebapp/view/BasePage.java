@@ -8,12 +8,9 @@ import org.apache.wicket.markup.MarkupType;
 import org.apache.wicket.markup.head.*;
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.markup.html.basic.Label;
-import org.apache.wicket.markup.html.form.Button;
 import org.apache.wicket.markup.html.link.Link;
 
-import java.text.SimpleDateFormat;
 import java.time.*;
-import java.util.Date;
 
 public abstract class BasePage extends WebPage {
     public BasePage() {

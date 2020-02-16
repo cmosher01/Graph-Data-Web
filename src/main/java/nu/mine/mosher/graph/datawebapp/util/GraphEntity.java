@@ -1,22 +1,12 @@
 package nu.mine.mosher.graph.datawebapp.util;
 
-    import org.neo4j.ogm.annotation.*;
-    import org.neo4j.ogm.annotation.typeconversion.Convert;
-    import org.neo4j.ogm.typeconversion.UuidStringConverter;
+import org.neo4j.ogm.annotation.*;
+import org.neo4j.ogm.annotation.typeconversion.Convert;
+import org.neo4j.ogm.typeconversion.UuidStringConverter;
 
-    import java.io.Serializable;
-    import java.time.*;
-    import java.util.*;
-
-/*
- * Entity classes must satisfy these requirements:
- *
- * * is Serializable
- * * Long id
- * * Long version
- * * UUID uuid
- * * has no properties that are collections (other than collections of references-to-entities)
- */
+import java.io.Serializable;
+import java.time.*;
+import java.util.UUID;
 
 @SuppressWarnings("unused")
 public abstract class GraphEntity implements Serializable {

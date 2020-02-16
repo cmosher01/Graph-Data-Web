@@ -9,7 +9,6 @@ import org.apache.wicket.markup.html.panel.Fragment;
 import org.apache.wicket.model.*;
 
 import java.io.Serializable;
-import java.lang.reflect.Field;
 import java.util.*;
 
 @SuppressWarnings({"rawtypes", "unchecked"})

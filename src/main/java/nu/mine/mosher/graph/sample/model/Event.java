@@ -4,7 +4,7 @@ import nu.mine.mosher.graph.datawebapp.util.GraphEntity;
 import org.neo4j.ogm.annotation.*;
 
 import java.io.Serializable;
-import java.util.*;
+import java.util.TreeSet;
 
 @NodeEntity(label=Event.TYPE)
 public class Event extends GraphEntity implements Serializable {

@@ -2,7 +2,7 @@ package nu.mine.mosher.graph.datawebapp.util;
 
 import org.apache.wicket.util.convert.converter.ZonedDateTimeConverter;
 
-import java.time.format.*;
+import java.time.format.DateTimeFormatter;
 
 public class IsoDateConverter extends ZonedDateTimeConverter {
     private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ISO_ZONED_DATE_TIME;

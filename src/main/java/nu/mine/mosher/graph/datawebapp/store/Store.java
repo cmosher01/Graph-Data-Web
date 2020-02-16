@@ -1,7 +1,7 @@
 package nu.mine.mosher.graph.datawebapp.store;
 
-import nu.mine.mosher.graph.datawebapp.util.*;
 import nu.mine.mosher.graph.datawebapp.util.Utils;
+import nu.mine.mosher.graph.datawebapp.util.*;
 import org.neo4j.graphdb.GraphDatabaseService;
 import org.neo4j.graphdb.factory.GraphDatabaseFactory;
 import org.neo4j.ogm.config.Configuration;
@@ -9,7 +9,7 @@ import org.neo4j.ogm.drivers.embedded.driver.EmbeddedDriver;
 import org.neo4j.ogm.metadata.ClassInfo;
 import org.neo4j.ogm.session.*;
 
-import java.io.*;
+import java.io.File;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
