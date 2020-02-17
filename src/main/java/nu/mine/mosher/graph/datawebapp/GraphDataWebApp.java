@@ -8,6 +8,7 @@ import org.apache.wicket.*;
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.protocol.http.WebApplication;
 
+import java.net.*;
 import java.time.ZonedDateTime;
 import java.util.Optional;
 
@@ -27,7 +28,11 @@ public class GraphDataWebApp extends WebApplication {
         super.init();
 
         String csvPackageNames = Optional.ofNullable(getInitParameter("packages")).orElse(Event.class.getPackageName());
-        this.store = new Store(csvPackageNames.split(","));
+        this.store = new Store(
+            getInitParameter("neo4j-bolt-url"),
+            getInitParameter("neo4j-username"),
+            getInitParameter("neo4j-password"),
+            csvPackageNames.split(","));
         this.props = new Props(this.store);
         this.title = Optional.ofNullable(getInitParameter("title")).orElse(csvPackageNames);
         this.stylesheet = Optional.ofNullable(getInitParameter("stylesheet")).orElse("");

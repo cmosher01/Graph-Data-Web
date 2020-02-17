@@ -21,19 +21,29 @@ public class Store {
 
     private final SessionFactory factorySession;
 
-    public Store(final String... packages) {
-        final GraphDatabaseService db =
-            new GraphDatabaseFactory().
-            newEmbeddedDatabaseBuilder(new File("database")).
-            newGraphDatabase();
-
-        final Configuration configuration =
-            new Configuration.Builder().
-            useNativeTypes().
-            strictQuerying().
-            build();
-        final EmbeddedDriver driver = new EmbeddedDriver(db, configuration);
-        this.factorySession = new SessionFactory(driver, packages);
+    public Store(final String bolt, final String username, final String password, final String... packages) {
+        if (Objects.nonNull(bolt) && !bolt.isEmpty()) {
+            Configuration configuration =
+                new Configuration.Builder().
+                useNativeTypes().
+                strictQuerying().
+                uri(bolt).
+                credentials(username, password).
+                build();
+            this.factorySession = new SessionFactory(configuration, packages);
+        } else {
+            final GraphDatabaseService db =
+                new GraphDatabaseFactory().
+                newEmbeddedDatabaseBuilder(new File("database")).
+                newGraphDatabase();
+            final Configuration configuration =
+                new Configuration.Builder().
+                useNativeTypes().
+                strictQuerying().
+                build();
+            final EmbeddedDriver driver = new EmbeddedDriver(db, configuration);
+            this.factorySession = new SessionFactory(driver, packages);
+        }
         this.factorySession.register(new Utils.UtcModifiedUpdater());
     }
 
