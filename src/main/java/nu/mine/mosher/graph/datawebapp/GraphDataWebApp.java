@@ -3,7 +3,7 @@ package nu.mine.mosher.graph.datawebapp;
 import nu.mine.mosher.graph.datawebapp.store.Store;
 import nu.mine.mosher.graph.datawebapp.util.*;
 import nu.mine.mosher.graph.datawebapp.view.PageHome;
-import nu.mine.mosher.graph.sample.model.Event;
+import nu.mine.mosher.graph.sample.imdb.Movie;
 import org.apache.wicket.*;
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.protocol.http.WebApplication;
@@ -27,7 +27,7 @@ public class GraphDataWebApp extends WebApplication {
     protected void init() {
         super.init();
 
-        String csvPackageNames = Optional.ofNullable(getInitParameter("packages")).orElse(Event.class.getPackageName());
+        String csvPackageNames = Optional.ofNullable(getInitParameter("packages")).orElse(Movie.class.getPackageName());
         this.store = new Store(
             getInitParameter("neo4j-bolt-url"),
             getInitParameter("neo4j-username"),
