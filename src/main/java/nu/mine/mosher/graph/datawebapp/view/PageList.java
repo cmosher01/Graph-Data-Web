@@ -17,12 +17,12 @@ public class PageList extends BasePage {
         this.cls = Objects.requireNonNull(cls);
         add(new Label("entity", cls.getSimpleName()));
         add(new ListEntity());
-        add(new WebMarkupContainer("empty").setVisible(store().count(cls) == 0L));
+        add(new WebMarkupContainer("empty").setVisible(!store().any(cls)));
         add(new LinkNew());
     }
 
     private Collection getAll() {
-        return store().getAll(cls);
+        return store().getAll(cls, 1); // TODO implement pagination
     }
 
     private final class ListEntity extends PropertyListView<Serializable> {
@@ -37,16 +37,16 @@ public class PageList extends BasePage {
     }
 
     private final class LinkEntity extends Link<Void> {
-        private final UUID uuid;
+        private final Serializable entity;
         public LinkEntity(final Serializable entity) {
             super("link");
-            this.uuid = Utils.uuid(entity);
+            this.entity = entity;
             add(new Label("entity", Utils.str(entity)));
         }
 
         @Override
         public void onClick() {
-            setResponsePage(new PageView(cls, uuid));
+            setResponsePage(new PageView(entity.getClass(), Utils.id(entity), Utils.uuid(entity)));
         }
     }
 
@@ -57,7 +57,7 @@ public class PageList extends BasePage {
 
         @Override
         public void onClick() {
-            setResponsePage(new PageEdit(cls, null));
+            setResponsePage(new PageEdit(cls, null, null));
         }
     }
 }

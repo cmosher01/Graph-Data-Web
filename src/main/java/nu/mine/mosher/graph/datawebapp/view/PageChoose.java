@@ -23,7 +23,7 @@ public class PageChoose extends BasePage {
         this.ref = ref;
         add(new Label("entity", ref.name+":"+ref.cls.getSimpleName()));
         add(new ListEntity(candidates));
-        add(new WebMarkupContainer("empty").setVisible(store().count(ref.cls) == 0L));
+        add(new WebMarkupContainer("empty").setVisible(!store().any(ref.cls)));
         add(new Link<Void>("cancel") {
             @Override
             public void onClick() {
@@ -62,7 +62,7 @@ public class PageChoose extends BasePage {
                 try {
                     ogm().save(Utils.resetEntity(parent));
                     store().dropSession(getSession().getId());
-                    setResponsePage(new PageView(parent.getClass(), Utils.uuid(parent)));
+                    setResponsePage(new PageView(parent.getClass(), Utils.id(parent), Utils.uuid(parent)));
                 } catch (Throwable e) {
                     e.printStackTrace();
                     setResponsePage(new PageView(parent));

@@ -5,36 +5,53 @@
      version="2.4"
 >
     <filter>
-        <filter-name>main</filter-name>
+        <filter-name>GraphDataWebApp</filter-name>
         <filter-class>org.apache.wicket.protocol.http.WicketFilter</filter-class>
+
         <init-param>
             <param-name>applicationClassName</param-name>
+            <!-- GraphDataWebApp class (required) -->
+            <!-- nu.mine.mosher.graph.datawebapp.GraphDataWebApp -->
             <param-value>nu.mine.mosher.graph.datawebapp.GraphDataWebApp</param-value>
         </init-param>
         <init-param>
             <param-name>packages</param-name>
-            <param-value>nu.mine.mosher.graph.sample.model</param-value>
+            <!-- comma-separated list of packages containing OGM entity classes (required) -->
+            <!-- A proof-of-concept demonstraction package is included with Graph-Data-web: -->
+            <!-- nu.mine.mosher.graph.sample.imdb -->
+            <param-value>nu.mine.mosher.graph.sample.imdb</param-value>
+        </init-param>
+        <init-param>
+            <param-name>title</param-name>
+            <!-- title of web pages (optional) -->
+            <param-value>My Graph Data</param-value>
         </init-param>
         <init-param>
             <param-name>stylesheet</param-name>
+            <!-- URL of stylesheet (optional) -->
             <param-value>https://mosher.mine.nu/uniwebfonts/test/test.css</param-value>
         </init-param>
         <init-param>
             <param-name>neo4j-bolt-url</param-name>
-            <param-value>bolt://localhost</param-value>
+            <!-- URL for bolt port on Neo4j server -->
+            <!-- If omitted, an embedded local database will we used instead -->
+            <!-- bolt://localhost -->
+            <param-value><!-- bolt://localhost --></param-value>
         </init-param>
         <init-param>
             <param-name>neo4j-username</param-name>
+            <!-- username for bolt Neo4j connection -->
             <param-value>neo4j</param-value>
         </init-param>
         <init-param>
             <param-name>neo4j-password</param-name>
+            <!-- password for bolt Neo4j connection -->
             <param-value>neo4j</param-value>
         </init-param>
     </filter>
 
     <filter-mapping>
-        <filter-name>main</filter-name>
+        <filter-name>GraphDataWebApp</filter-name>
         <url-pattern>/*</url-pattern>
     </filter-mapping>
 </web-app>

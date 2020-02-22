@@ -5,6 +5,8 @@ import nu.mine.mosher.graph.datawebapp.util.*;
 import org.neo4j.graphdb.GraphDatabaseService;
 import org.neo4j.graphdb.factory.GraphDatabaseFactory;
 import org.neo4j.ogm.config.Configuration;
+import org.neo4j.ogm.cypher.*;
+import org.neo4j.ogm.cypher.query.Pagination;
 import org.neo4j.ogm.drivers.embedded.driver.EmbeddedDriver;
 import org.neo4j.ogm.metadata.ClassInfo;
 import org.neo4j.ogm.session.*;
@@ -16,7 +18,6 @@ import java.util.stream.Collectors;
 
 @SuppressWarnings("rawtypes")
 public class Store {
-
     private final Map<String, Session> cacheSession = new ConcurrentHashMap<>();
 
     private final SessionFactory factorySession;
@@ -63,15 +64,25 @@ public class Store {
             collect(Collectors.toUnmodifiableList());
     }
 
-    public long count(final Class cls) {
+    private static final List<Filter> OPTIMIZE_CYPHER_QUERY = Collections.emptyList();
+
+    /**
+     * Checks for existence of any entities of the given type in the database.
+     * @param cls type of entity (node or relationship) to check
+     * @return true if at least one node or relationship of type cls exists
+     */
+    public boolean any(final Class cls) {
         final Session session = this.factorySession.openSession();
-        return session.countEntitiesOfType(cls);
+        return session.count(cls, OPTIMIZE_CYPHER_QUERY) > 0;
     }
 
+    public static final int PAGE_SIZE = 100;
+
     @SuppressWarnings("unchecked")
-    public Collection getAll(final Class cls) {
+    public Collection getAll(final Class cls, final int page) {
         final Session session = this.factorySession.openSession();
-        return Objects.requireNonNull(session.loadAll(cls, 1));
+        // TODO implement user query
+        return Objects.requireNonNull(session.loadAll(cls, new Pagination(page, PAGE_SIZE), 1));
     }
 
     public Session getSession(final String id) {

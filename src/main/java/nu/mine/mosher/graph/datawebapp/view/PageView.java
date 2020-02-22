@@ -15,8 +15,8 @@ import java.util.*;
 public class PageView extends BasePage {
     private final Serializable entity;
 
-    public PageView(Class cls, UUID uuid) {
-        this.entity = Objects.requireNonNull((Serializable)ogm().load(cls,Objects.requireNonNull(uuid)));
+    public PageView(Class cls, Long id, UUID uuid) {
+        this.entity = Utils.same(uuid, ogm().load(cls,Objects.requireNonNull(id)));
         init();
     }
 
@@ -42,7 +42,7 @@ public class PageView extends BasePage {
         add(new Link<Void>("edit") {
             @Override
             public void onClick() {
-                setResponsePage(new PageEdit(entity.getClass(), Utils.uuid(entity)));
+                setResponsePage(new PageEdit(entity.getClass(), Utils.id(entity), Utils.uuid(entity)));
             }
         });
 
@@ -73,10 +73,12 @@ public class PageView extends BasePage {
 
                 // A relationship entity can never already be in existence, so we always need
                 // to make a new one here, rather than go to PageChooser
+                // The downside, userability-wise, is the user needs to select both nodes for the
+                // new relationship (even the node they're coming from) (TODO: fix that, somehow)
                 item.add(new Link<Void>("add") {
                     @Override
                     public void onClick() {
-                        setResponsePage(new PageEdit(ref.cls, null));
+                        setResponsePage(new PageEdit(ref.cls, null, null));
                     }
                 });
             }
@@ -119,7 +121,7 @@ public class PageView extends BasePage {
                 item.add(new Link<Void>("add") {
                     @Override
                     public void onClick() {
-                        setResponsePage(new PageChoose(entity, ref, /* TODO limit list to choose from? */ store().getAll(ref.cls)));
+                        setResponsePage(new PageChoose(entity, ref, /* TODO limit list to choose from? */ store().getAll(ref.cls, 1)));
                     }
                 }.setVisible(Objects.isNull(referent)));
             }
@@ -154,7 +156,7 @@ public class PageView extends BasePage {
             }
             try {
                 ogm().save(entity);
-                setResponsePage(new PageView(entity.getClass(), Utils.uuid(entity)));
+                setResponsePage(new PageView(entity.getClass(), Utils.id(entity), Utils.uuid(entity)));
             } catch (Throwable e) {
                 e.printStackTrace();
                 setResponsePage(new PageView(entity));
@@ -172,7 +174,7 @@ public class PageView extends BasePage {
 
         @Override
         public void onClick() {
-            setResponsePage(new PageView(this.referent.getClass(), Utils.uuid(this.referent)));
+            setResponsePage(new PageView(this.referent.getClass(), Utils.id(this.referent), Utils.uuid(this.referent)));
         }
     }
 }

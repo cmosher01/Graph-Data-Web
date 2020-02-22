@@ -2,6 +2,7 @@ package nu.mine.mosher.graph.datawebapp.util;
 
 
 import org.apache.wicket.model.PropertyModel;
+import org.neo4j.ogm.exception.OptimisticLockingException;
 import org.neo4j.ogm.session.event.*;
 
 import java.io.Serializable;
@@ -51,7 +52,26 @@ public final class Utils {
     }
 
     public static UUID uuid(final Object entity) {
-        return (UUID)Objects.requireNonNull(new PropertyModel<>(entity, "uuid").getObject());
+        return prop(entity, "uuid", UUID.class);
+    }
+
+    public static Long id(final Object entity) {
+        return prop(entity, "id", Long.class);
+    }
+    @SuppressWarnings("unchecked")
+    public static <T> T prop(final Object object, final String nameProperty, final Class<T> cls) {
+        return
+            (T)
+            new PropertyModel<>(Objects.requireNonNull(object), Objects.requireNonNull(nameProperty)).
+            getObject();
+    }
+
+    public static Serializable same(final UUID expected, final Object entity) {
+        final UUID actual = Utils.uuid(Objects.requireNonNull(entity));
+        if (!actual.equals(Objects.requireNonNull(expected))) {
+            throw new OptimisticLockingException("Retrieved unexpected object from database: expected="+expected+", actual="+actual);
+        }
+        return (Serializable)entity;
     }
 
     public static Serializable initEntity(final Object entity) {

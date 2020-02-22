@@ -17,9 +17,9 @@ public class PageEdit extends BasePage {
     private boolean isNew;
     private boolean isBad;
 
-    public PageEdit(Class cls, UUID uuid) {
-        this.isNew = Objects.isNull(uuid);
-        this.entity = this.isNew ? Utils.create(cls) : (Serializable)ogm().load(cls, uuid);
+    public PageEdit(Class cls, Long id, UUID uuid) {
+        this.isNew = Objects.isNull(id);
+        this.entity = this.isNew ? Utils.create(cls) : Utils.same(uuid, ogm().load(cls, id));
         add(new Label("entity", cls.getSimpleName()));
         add(new FormEntity());
     }
@@ -88,7 +88,7 @@ public class PageEdit extends BasePage {
             } else if (isNew) {
                 setResponsePage(new PageList(entity.getClass()));
             } else {
-                setResponsePage(new PageView(entity.getClass(), Utils.uuid(entity)));
+                setResponsePage(new PageView(entity.getClass(), Utils.id(entity), Utils.uuid(entity)));
             }
         }
     }

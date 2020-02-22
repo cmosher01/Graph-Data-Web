@@ -12,7 +12,7 @@ import java.util.UUID;
 public abstract class GraphEntity implements Serializable {
     @ReadOnly @Id @GeneratedValue public Long id;
     @ReadOnly @Version public Long version;
-    @ReadOnly @Convert(UuidStringConverter.class) @Index(unique=true) @Id public UUID uuid;
+    @ReadOnly @Convert(UuidStringConverter.class) @Index(unique=true) public UUID uuid;
     @ReadOnly @Index() public ZonedDateTime utcCreated;
     @ReadOnly @Index() public ZonedDateTime utcModified;
     @ReadOnly transient public ZonedDateTime utcLoaded = ZonedDateTime.now(ZoneOffset.UTC);
