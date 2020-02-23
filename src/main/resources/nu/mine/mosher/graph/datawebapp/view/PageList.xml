@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <wicket:extend xmlns="http://www.w3.org/1999/xhtml" xmlns:wicket="http://wicket.apache.org">
     <h3 wicket:id="entity"/>
+    <form wicket:id="form">
+        <input wicket:id="search"/>
+        <input type="submit" value="search"/>
+    </form>
     <ul>
         <li wicket:id="list">
             <a wicket:id="link"><b><span wicket:id="entity"/></b></a>

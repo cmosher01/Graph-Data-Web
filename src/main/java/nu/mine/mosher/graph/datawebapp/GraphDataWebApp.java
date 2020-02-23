@@ -8,11 +8,11 @@ import org.apache.wicket.*;
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.protocol.http.WebApplication;
 
-import java.net.*;
 import java.time.ZonedDateTime;
-import java.util.Optional;
+import java.util.*;
 
 public class GraphDataWebApp extends WebApplication {
+    private List<String> idxProperties;
     private Store store;
     private Props props;
     private String title;
@@ -36,6 +36,35 @@ public class GraphDataWebApp extends WebApplication {
         this.props = new Props(this.store);
         this.title = Optional.ofNullable(getInitParameter("title")).orElse(csvPackageNames);
         this.stylesheet = Optional.ofNullable(getInitParameter("stylesheet")).orElse("");
+        createFullTextIndex();
+    }
+
+    public synchronized void createFullTextIndex() {
+        if (this.idxProperties == null) {
+            final org.neo4j.ogm.session.Session ogm = ((GraphDataWebApp)Application.get()).store().getSession("init");
+
+            String csvIndexProperties = Optional.ofNullable(getInitParameter("index-properties")).orElse("name");
+            this.idxProperties = Arrays.asList(csvIndexProperties.split(","));
+
+            if (!indexExists("fulltextNode")) {
+                final String queryNod = "CALL db.index.fulltext.createNodeIndex(\"fulltextNode\", $entities, $properties)";
+                final List<String> namesNod = this.store.namesNodes();
+                ogm.query(void.class, queryNod, Map.of("entities", namesNod, "properties", this.idxProperties));
+            }
+            if (!indexExists("fulltextRelationship")) {
+                final String queryRel = "CALL db.index.fulltext.createRelationshipIndex(\"fulltextRelationship\", $entities, $properties)";
+                final List<String> namesRel = this.store.namesRelationships();
+                ogm.query(void.class, queryRel, Map.of("entities", namesRel, "properties", this.idxProperties));
+            }
+            ((GraphDataWebApp)Application.get()).store().dropSession("init");
+        }
+    }
+
+    private boolean indexExists(final String name) {
+        final org.neo4j.ogm.session.Session ogm = ((GraphDataWebApp)Application.get()).store().getSession("init");
+        final String query = "CALL db.indexes() YIELD indexName WHERE indexName=$name RETURN COUNT(*)";
+        final Iterable<Integer> result = ogm.query(int.class, query, Map.of("name", name));
+        return result.iterator().next() > 0;
     }
 
     @Override

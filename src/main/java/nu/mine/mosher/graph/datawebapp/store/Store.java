@@ -5,8 +5,7 @@ import nu.mine.mosher.graph.datawebapp.util.*;
 import org.neo4j.graphdb.GraphDatabaseService;
 import org.neo4j.graphdb.factory.GraphDatabaseFactory;
 import org.neo4j.ogm.config.Configuration;
-import org.neo4j.ogm.cypher.*;
-import org.neo4j.ogm.cypher.query.Pagination;
+import org.neo4j.ogm.cypher.Filter;
 import org.neo4j.ogm.drivers.embedded.driver.EmbeddedDriver;
 import org.neo4j.ogm.metadata.ClassInfo;
 import org.neo4j.ogm.session.*;
@@ -14,7 +13,7 @@ import org.neo4j.ogm.session.*;
 import java.io.File;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Collectors;
+import java.util.stream.*;
 
 @SuppressWarnings("rawtypes")
 public class Store {
@@ -52,7 +51,47 @@ public class Store {
         return Objects.nonNull(this.factorySession.metaData().classInfo(cls));
     }
 
-    public List<Class> entities() {
+    public boolean isRelationshipEntity(final Class cls) {
+        final ClassInfo info = this.factorySession.metaData().classInfo(cls);
+        return Objects.nonNull(info) && info.isRelationshipEntity();
+    }
+
+    public boolean isNodeEntity(final Class cls) {
+        final ClassInfo info = this.factorySession.metaData().classInfo(cls);
+        return Objects.nonNull(info) && !info.isRelationshipEntity();
+    }
+
+    public List<Class> entityClasses() {
+        return
+            entityStream().
+            collect(Collectors.toUnmodifiableList());
+    }
+
+    public List<String> namesNodes() {
+        return
+            this.
+            factorySession.
+            metaData().
+            persistentEntities().
+            stream().
+            filter(ci -> isNodeEntity(ci.getUnderlyingClass())).
+            map(ClassInfo::neo4jName).
+            collect(Collectors.toUnmodifiableList());
+    }
+
+    public List<String> namesRelationships() {
+        return
+            this.
+            factorySession.
+            metaData().
+            persistentEntities().
+            stream().
+            filter(ci -> isRelationshipEntity(ci.getUnderlyingClass())).
+            map(ClassInfo::neo4jName).
+            collect(Collectors.toUnmodifiableList());
+    }
+
+    private Stream<? extends Class<?>> entityStream() {
         return
             this.
             factorySession.
@@ -60,8 +99,7 @@ public class Store {
             persistentEntities().
             stream().
             map(ClassInfo::getUnderlyingClass).
-            filter(c -> !c.equals(GraphEntity.class)).
-            collect(Collectors.toUnmodifiableList());
+            filter(c -> !c.equals(GraphEntity.class));
     }
 
     private static final List<Filter> OPTIMIZE_CYPHER_QUERY = Collections.emptyList();
@@ -74,15 +112,6 @@ public class Store {
     public boolean any(final Class cls) {
         final Session session = this.factorySession.openSession();
         return session.count(cls, OPTIMIZE_CYPHER_QUERY) > 0;
-    }
-
-    public static final int PAGE_SIZE = 100;
-
-    @SuppressWarnings("unchecked")
-    public Collection getAll(final Class cls, final int page) {
-        final Session session = this.factorySession.openSession();
-        // TODO implement user query
-        return Objects.requireNonNull(session.loadAll(cls, new Pagination(page, PAGE_SIZE), 1));
     }
 
     public Session getSession(final String id) {

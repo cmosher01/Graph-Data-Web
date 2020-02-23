@@ -16,14 +16,21 @@
         </init-param>
         <init-param>
             <param-name>packages</param-name>
-            <!-- comma-separated list of packages containing OGM entity classes (required) -->
-            <!-- A proof-of-concept demonstraction package is included with Graph-Data-web: -->
+            <!-- Comma-separated list of packages containing OGM entity classes (required) -->
+            <!-- A proof-of-concept demonstration package is included with Graph-Data-web: -->
             <!-- nu.mine.mosher.graph.sample.imdb -->
             <param-value>nu.mine.mosher.graph.sample.imdb</param-value>
         </init-param>
         <init-param>
+            <param-name>index-properties</param-name>
+            <!-- Comma-separated list of property names (within nodes or relationships) -->
+            <!-- that should be indexed for searching. -->
+            <!-- Default: name -->
+            <param-value>primaryTitle,primaryName,job</param-value>
+        </init-param>
+        <init-param>
             <param-name>title</param-name>
-            <!-- title of web pages (optional) -->
+            <!-- Title of web pages (optional) -->
             <param-value>My Graph Data</param-value>
         </init-param>
         <init-param>
@@ -35,17 +42,17 @@
             <param-name>neo4j-bolt-url</param-name>
             <!-- URL for bolt port on Neo4j server -->
             <!-- If omitted, an embedded local database will we used instead -->
-            <!-- bolt://localhost -->
+            <!-- Example: bolt://localhost -->
             <param-value><!-- bolt://localhost --></param-value>
         </init-param>
         <init-param>
             <param-name>neo4j-username</param-name>
-            <!-- username for bolt Neo4j connection -->
+            <!-- Username for bolt Neo4j connection -->
             <param-value>neo4j</param-value>
         </init-param>
         <init-param>
             <param-name>neo4j-password</param-name>
-            <!-- password for bolt Neo4j connection -->
+            <!-- Password for bolt Neo4j connection -->
             <param-value>neo4j</param-value>
         </init-param>
     </filter>

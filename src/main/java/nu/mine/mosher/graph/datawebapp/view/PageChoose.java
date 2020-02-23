@@ -1,6 +1,8 @@
 package nu.mine.mosher.graph.datawebapp.view;
 
+import nu.mine.mosher.graph.datawebapp.GraphDataWebApp;
 import nu.mine.mosher.graph.datawebapp.util.*;
+import org.apache.wicket.*;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.link.Link;
@@ -13,16 +15,14 @@ import java.util.*;
 
 @SuppressWarnings({"unchecked", "rawtypes"})
 public class PageChoose extends BasePage {
-    private final Logger LOG = LoggerFactory.getLogger(PageChoose.class);
-
     private final Serializable parent;
     private final Props.Ref ref;
 
-    public PageChoose(Serializable entity, Props.Ref ref, Collection candidates) {
+    public PageChoose(Serializable entity, Props.Ref ref) {
         this.parent = entity;
         this.ref = ref;
         add(new Label("entity", ref.name+":"+ref.cls.getSimpleName()));
-        add(new ListEntity(candidates));
+        add(new ListEntity(recent(ref.cls)));
         add(new WebMarkupContainer("empty").setVisible(!store().any(ref.cls)));
         add(new Link<Void>("cancel") {
             @Override
@@ -32,11 +32,15 @@ public class PageChoose extends BasePage {
         });
     }
 
-
+    private static List<Serializable> recent(Class cls) {
+        // TODO MRU search
+        final org.neo4j.ogm.session.Session ogm = ((GraphDataWebApp)Application.get()).store().getSession(Session.get().getId());
+        return Collections.list(Collections.enumeration(ogm.loadAll(cls)));
+    }
 
     private final class ListEntity extends PropertyListView<Serializable> {
-        public ListEntity(Collection candidates) {
-            super("list", Collections.list(Collections.enumeration(candidates)));
+        public ListEntity(List<Serializable> candidates) {
+            super("list", candidates);
         }
 
         @Override

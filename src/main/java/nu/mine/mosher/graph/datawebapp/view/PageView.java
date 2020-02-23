@@ -121,7 +121,7 @@ public class PageView extends BasePage {
                 item.add(new Link<Void>("add") {
                     @Override
                     public void onClick() {
-                        setResponsePage(new PageChoose(entity, ref, /* TODO limit list to choose from? */ store().getAll(ref.cls, 1)));
+                        setResponsePage(new PageChoose(entity, ref));
                     }
                 }.setVisible(Objects.isNull(referent)));
             }

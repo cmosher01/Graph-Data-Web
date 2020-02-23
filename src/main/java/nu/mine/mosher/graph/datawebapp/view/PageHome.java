@@ -1,6 +1,8 @@
 package nu.mine.mosher.graph.datawebapp.view;
 
 
+import nu.mine.mosher.graph.datawebapp.GraphDataWebApp;
+import org.apache.wicket.Application;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.markup.html.list.*;
@@ -41,6 +43,6 @@ public class PageHome extends BasePage {
     }
 
     private List<Class> entities() {
-        return List.copyOf(store().entities());
+        return List.copyOf(store().entityClasses());
     }
 }
