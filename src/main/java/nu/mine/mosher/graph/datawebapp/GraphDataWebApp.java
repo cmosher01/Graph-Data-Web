@@ -43,18 +43,16 @@ public class GraphDataWebApp extends WebApplication {
         if (this.idxProperties == null) {
             final org.neo4j.ogm.session.Session ogm = ((GraphDataWebApp)Application.get()).store().getSession("init");
 
-            String csvIndexProperties = Optional.ofNullable(getInitParameter("index-properties")).orElse("name");
+            final String csvIndexProperties = Optional.ofNullable(getInitParameter("index-properties")).orElse("name");
             this.idxProperties = Arrays.asList(csvIndexProperties.split(","));
 
             if (!indexExists("fulltextNode")) {
                 final String queryNod = "CALL db.index.fulltext.createNodeIndex(\"fulltextNode\", $entities, $properties)";
-                final List<String> namesNod = this.store.namesNodes();
-                ogm.query(void.class, queryNod, Map.of("entities", namesNod, "properties", this.idxProperties));
+                ogm.query(void.class, queryNod, Map.of("entities", this.store.namesNodes(), "properties", this.idxProperties));
             }
             if (!indexExists("fulltextRelationship")) {
                 final String queryRel = "CALL db.index.fulltext.createRelationshipIndex(\"fulltextRelationship\", $entities, $properties)";
-                final List<String> namesRel = this.store.namesRelationships();
-                ogm.query(void.class, queryRel, Map.of("entities", namesRel, "properties", this.idxProperties));
+                ogm.query(void.class, queryRel, Map.of("entities", this.store.namesRelationships(), "properties", this.idxProperties));
             }
             ((GraphDataWebApp)Application.get()).store().dropSession("init");
         }
@@ -64,7 +62,9 @@ public class GraphDataWebApp extends WebApplication {
         final org.neo4j.ogm.session.Session ogm = ((GraphDataWebApp)Application.get()).store().getSession("init");
         final String query = "CALL db.indexes() YIELD indexName WHERE indexName=$name RETURN COUNT(*)";
         final Iterable<Integer> result = ogm.query(int.class, query, Map.of("name", name));
-        return result.iterator().next() > 0;
+        final int count = result.iterator().next();
+        ((GraphDataWebApp)Application.get()).store().dropSession("init");
+        return count > 0;
     }
 
     @Override

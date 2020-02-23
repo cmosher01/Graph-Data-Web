@@ -1,5 +1,6 @@
 package nu.mine.mosher.graph.datawebapp.store;
 
+import com.github.benmanes.caffeine.cache.*;
 import nu.mine.mosher.graph.datawebapp.util.Utils;
 import nu.mine.mosher.graph.datawebapp.util.*;
 import org.neo4j.graphdb.GraphDatabaseService;
@@ -12,39 +13,51 @@ import org.neo4j.ogm.session.*;
 
 import java.io.File;
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.*;
 import java.util.stream.*;
 
 @SuppressWarnings("rawtypes")
 public class Store {
-    private final Map<String, Session> cacheSession = new ConcurrentHashMap<>();
+    private final LoadingCache<String, Session> cacheSession;
 
     private final SessionFactory factorySession;
 
     public Store(final String bolt, final String username, final String password, final String... packages) {
+        this.factorySession = createSessionFactory(bolt, username, password, packages);
+        this.factorySession.register(new Utils.UtcModifiedUpdater());
+
+        this.cacheSession = Caffeine.newBuilder()
+            .expireAfterWrite(1, TimeUnit.HOURS)
+            .build(key -> this.factorySession.openSession());
+
+        Scheduler.systemScheduler().schedule(
+            ForkJoinPool.commonPool(),
+            this.cacheSession::cleanUp,
+            5, TimeUnit.MINUTES);
+    }
+
+    private static SessionFactory createSessionFactory(final String bolt, final String username, final String password, final String... packages) {
+        final Configuration.Builder configBase = new Configuration.Builder().
+            useNativeTypes().
+            strictQuerying();
+
+        final SessionFactory sf;
         if (Objects.nonNull(bolt) && !bolt.isEmpty()) {
-            Configuration configuration =
-                new Configuration.Builder().
-                useNativeTypes().
-                strictQuerying().
+            final Configuration config =
+                configBase.
                 uri(bolt).
                 credentials(username, password).
                 build();
-            this.factorySession = new SessionFactory(configuration, packages);
+            sf = new SessionFactory(config, packages);
         } else {
             final GraphDatabaseService db =
                 new GraphDatabaseFactory().
                 newEmbeddedDatabaseBuilder(new File("database")).
                 newGraphDatabase();
-            final Configuration configuration =
-                new Configuration.Builder().
-                useNativeTypes().
-                strictQuerying().
-                build();
-            final EmbeddedDriver driver = new EmbeddedDriver(db, configuration);
-            this.factorySession = new SessionFactory(driver, packages);
+            final EmbeddedDriver driver = new EmbeddedDriver(db, configBase.build());
+            sf = new SessionFactory(driver, packages);
         }
-        this.factorySession.register(new Utils.UtcModifiedUpdater());
+        return sf;
     }
 
     public boolean isEntity(final Class cls) {
@@ -63,7 +76,13 @@ public class Store {
 
     public List<Class> entityClasses() {
         return
-            entityStream().
+            this.
+            factorySession.
+            metaData().
+            persistentEntities().
+            stream().
+            map(ClassInfo::getUnderlyingClass).
+            filter(c -> !c.equals(GraphEntity.class)).
             collect(Collectors.toUnmodifiableList());
     }
 
@@ -91,17 +110,6 @@ public class Store {
             collect(Collectors.toUnmodifiableList());
     }
 
-    private Stream<? extends Class<?>> entityStream() {
-        return
-            this.
-            factorySession.
-            metaData().
-            persistentEntities().
-            stream().
-            map(ClassInfo::getUnderlyingClass).
-            filter(c -> !c.equals(GraphEntity.class));
-    }
-
     private static final List<Filter> OPTIMIZE_CYPHER_QUERY = Collections.emptyList();
 
     /**
@@ -115,10 +123,10 @@ public class Store {
     }
 
     public Session getSession(final String id) {
-        return cacheSession.computeIfAbsent(id, k -> this.factorySession.openSession());
+        return cacheSession.get(id);
     }
 
     public void dropSession(final String id) {
-        cacheSession.remove(id);
+        cacheSession.invalidate(id);
     }
 }
