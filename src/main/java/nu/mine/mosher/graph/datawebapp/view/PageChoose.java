@@ -1,14 +1,11 @@
 package nu.mine.mosher.graph.datawebapp.view;
 
-import nu.mine.mosher.graph.datawebapp.GraphDataWebApp;
 import nu.mine.mosher.graph.datawebapp.util.*;
-import org.apache.wicket.*;
-import org.apache.wicket.markup.html.WebMarkupContainer;
+import org.apache.wicket.Session;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.markup.html.list.*;
 import org.apache.wicket.model.PropertyModel;
-import org.slf4j.*;
 
 import java.io.Serializable;
 import java.util.*;
@@ -23,7 +20,7 @@ public class PageChoose extends BasePage {
         this.ref = ref;
         add(new Label("entity", ref.name+":"+ref.cls.getSimpleName()));
         add(new ListEntity(recent(ref.cls)));
-        add(new WebMarkupContainer("empty").setVisible(!store().any(ref.cls)));
+//        add(new WebMarkupContainer("empty").setVisible(!store().any(ref.cls)));
         add(new Link<Void>("cancel") {
             @Override
             public void onClick() {
@@ -34,7 +31,7 @@ public class PageChoose extends BasePage {
 
     private static List<Serializable> recent(Class cls) {
         // TODO MRU search
-        final org.neo4j.ogm.session.Session ogm = ((GraphDataWebApp)Application.get()).store().getSession(Session.get().getId());
+        final org.neo4j.ogm.session.Session ogm = Utils.store().getSession(Session.get().getId());
         return Collections.list(Collections.enumeration(ogm.loadAll(cls)));
     }
 
@@ -64,8 +61,8 @@ public class PageChoose extends BasePage {
                     new PropertyModel<>(parent, ref.name).setObject(child);
                 }
                 try {
-                    ogm().save(Utils.resetEntity(parent));
-                    store().dropSession(getSession().getId());
+                    Utils.ogm().save(Utils.resetEntity(parent));
+                    Utils.store().dropSession(getSession().getId());
                     setResponsePage(new PageView(parent.getClass(), Utils.id(parent), Utils.uuid(parent)));
                 } catch (Throwable e) {
                     e.printStackTrace();

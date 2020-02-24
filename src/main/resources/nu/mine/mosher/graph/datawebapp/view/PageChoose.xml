@@ -8,8 +8,8 @@
         <li wicket:id="list">
             <a wicket:id="link"><b><span wicket:id="entity"/></b></a>
         </li>
-        <li wicket:id="empty">
-            <wicket:message key="empty"/>
-        </li>
+<!--        <li wicket:id="empty">-->
+<!--            <wicket:message key="empty"/>-->
+<!--        </li>-->
     </ul>
 </wicket:extend>

@@ -1,9 +1,11 @@
 package nu.mine.mosher.graph.datawebapp.util;
 
 
+import nu.mine.mosher.graph.datawebapp.GraphDataWebApp;
+import nu.mine.mosher.graph.datawebapp.store.Store;
+import org.apache.wicket.*;
 import org.apache.wicket.model.PropertyModel;
 import org.neo4j.ogm.exception.OptimisticLockingException;
-import org.neo4j.ogm.session.event.*;
 
 import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
@@ -11,14 +13,6 @@ import java.time.*;
 import java.util.*;
 
 public final class Utils {
-    public static class UtcModifiedUpdater extends EventListenerAdapter {
-        @Override
-        public void onPreSave(Event event) {
-            super.onPreSave(event);
-            new PropertyModel<>(event.getObject(), "utcModified").setObject(ZonedDateTime.now(ZoneOffset.UTC));
-        }
-    }
-
     @SuppressWarnings("rawtypes")
     public static Serializable create(final Class cls) {
         try {
@@ -27,19 +21,6 @@ public final class Utils {
             throw new IllegalStateException(e);
         }
     }
-
-    @SuppressWarnings("rawtypes")
-    private static Object instance(final Class cls) throws IllegalAccessException, InvocationTargetException, InstantiationException {
-        return
-            Arrays.
-            stream(cls.getDeclaredConstructors()).
-            filter(c -> c.getGenericParameterTypes().length == 0).
-            findAny().
-            orElseThrow().
-            newInstance();
-    }
-
-    private Utils() {}
 
     public static String str(final Object object) {
         return Objects.isNull(object) ? "" : object.toString();
@@ -58,6 +39,7 @@ public final class Utils {
     public static Long id(final Object entity) {
         return prop(entity, "id", Long.class);
     }
+
     @SuppressWarnings("unchecked")
     public static <T> T prop(final Object object, final String nameProperty, final Class<T> cls) {
         return
@@ -74,9 +56,42 @@ public final class Utils {
         return (Serializable)entity;
     }
 
-    public static Serializable initEntity(final Object entity) {
+
+    public static Store store() {
+        return app().store();
+    }
+
+    public static Props props() {
+        return app().props();
+    }
+
+    public static org.neo4j.ogm.session.Session ogm() {
+        return store().getSession(Session.get().getId());
+    }
+
+    public static GraphDataWebApp app() {
+        return (GraphDataWebApp)Application.get();
+    }
+
+
+
+    @SuppressWarnings("rawtypes")
+    private static Serializable instance(final Class cls) throws IllegalAccessException, InvocationTargetException, InstantiationException {
+        return
+            (Serializable)
+            Arrays.
+            stream(cls.getDeclaredConstructors()).
+            filter(c -> c.getGenericParameterTypes().length == 0).
+            findAny().
+            orElseThrow().
+            newInstance();
+    }
+
+    private static Serializable initEntity(final Serializable entity) {
         new PropertyModel<>(entity, "uuid").setObject(UUID.randomUUID());
         new PropertyModel<>(entity, "utcCreated").setObject(ZonedDateTime.now(ZoneOffset.UTC));
-        return (Serializable)entity;
+        return entity;
     }
+
+    private Utils() {}
 }

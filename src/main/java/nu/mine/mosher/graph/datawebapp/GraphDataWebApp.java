@@ -1,14 +1,16 @@
 package nu.mine.mosher.graph.datawebapp;
 
 import nu.mine.mosher.graph.datawebapp.store.Store;
-import nu.mine.mosher.graph.datawebapp.util.*;
+import nu.mine.mosher.graph.datawebapp.util.Props;
 import nu.mine.mosher.graph.datawebapp.view.PageHome;
 import nu.mine.mosher.graph.sample.imdb.Movie;
 import org.apache.wicket.*;
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.protocol.http.WebApplication;
+import org.apache.wicket.util.convert.converter.ZonedDateTimeConverter;
 
 import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 public class GraphDataWebApp extends WebApplication {
@@ -39,9 +41,9 @@ public class GraphDataWebApp extends WebApplication {
         createFullTextIndex();
     }
 
-    public synchronized void createFullTextIndex() {
+    private void createFullTextIndex() {
         if (this.idxProperties == null) {
-            final org.neo4j.ogm.session.Session ogm = ((GraphDataWebApp)Application.get()).store().getSession("init");
+            final org.neo4j.ogm.session.Session ogm = store().getSession("init");
 
             final String csvIndexProperties = Optional.ofNullable(getInitParameter("index-properties")).orElse("name");
             this.idxProperties = Arrays.asList(csvIndexProperties.split(","));
@@ -54,23 +56,30 @@ public class GraphDataWebApp extends WebApplication {
                 final String queryRel = "CALL db.index.fulltext.createRelationshipIndex(\"fulltextRelationship\", $entities, $properties)";
                 ogm.query(void.class, queryRel, Map.of("entities", this.store.namesRelationships(), "properties", this.idxProperties));
             }
-            ((GraphDataWebApp)Application.get()).store().dropSession("init");
+            store().dropSession("init");
         }
     }
 
     private boolean indexExists(final String name) {
-        final org.neo4j.ogm.session.Session ogm = ((GraphDataWebApp)Application.get()).store().getSession("init");
+        final org.neo4j.ogm.session.Session ogm = store().getSession("init");
         final String query = "CALL db.indexes() YIELD indexName WHERE indexName=$name RETURN COUNT(*)";
         final Iterable<Integer> result = ogm.query(int.class, query, Map.of("name", name));
         final int count = result.iterator().next();
-        ((GraphDataWebApp)Application.get()).store().dropSession("init");
+        store().dropSession("init");
         return count > 0;
     }
 
     @Override
     protected IConverterLocator newConverterLocator() {
         final ConverterLocator loc = new ConverterLocator();
-        loc.set(ZonedDateTime.class, new IsoDateConverter());
+
+        // override Wicket's built-in converter; we show ISO format instead
+        loc.set(ZonedDateTime.class, new ZonedDateTimeConverter() {
+            @Override
+            protected DateTimeFormatter getDateTimeFormatter() {
+                return DateTimeFormatter.ISO_ZONED_DATE_TIME;
+            }
+        });
         return loc;
     }
 

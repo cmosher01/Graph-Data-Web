@@ -19,6 +19,6 @@ public class Movie extends GraphEntity implements Serializable {
 
     @Override
     public String toString() {
-        return this.primaryTitle;
+        return this.primaryTitle+" ("+startYear+" "+titleType+")";
     }
 }

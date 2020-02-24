@@ -9,11 +9,14 @@
         <li wicket:id="list">
             <a wicket:id="link"><b><span wicket:id="entity"/></b></a>
         </li>
-        <li wicket:id="empty">
-            <wicket:message key="empty"/>
-        </li>
+<!--        <li wicket:id="empty">-->
+<!--            <wicket:message key="empty"/>-->
+<!--        </li>-->
         <li>
             <button wicket:id="new"><wicket:message key="new"/></button>
         </li>
     </ul>
+    <button wicket:id="prev"><wicket:message key="prev"/></button>
+    <span wicket:id="page"/>
+    <button wicket:id="next"><wicket:message key="next"/></button>
 </wicket:extend>

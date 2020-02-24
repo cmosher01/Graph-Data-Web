@@ -19,7 +19,7 @@ public class PageEdit extends BasePage {
 
     public PageEdit(Class cls, Long id, UUID uuid) {
         this.isNew = Objects.isNull(id);
-        this.entity = this.isNew ? Utils.create(cls) : Utils.same(uuid, ogm().load(cls, id));
+        this.entity = this.isNew ? Utils.create(cls) : Utils.same(uuid, Utils.ogm().load(cls, id));
         add(new Label("entity", cls.getSimpleName()));
         add(new FormEntity());
     }
@@ -30,7 +30,7 @@ public class PageEdit extends BasePage {
 
 
 
-            add(new ListView<>("properties", props().properties(entity.getClass())) {
+            add(new ListView<>("properties", Utils.props().properties(entity.getClass())) {
                 @Override
                 protected void populateItem(final ListItem<Props.Prop> item) {
                     final Props.Prop prop = item.getModelObject();
@@ -71,8 +71,8 @@ public class PageEdit extends BasePage {
         protected void onSubmit() {
             isBad = true;
             try {
-                ogm().save(entity);
-                store().dropSession(getSession().getId());
+                Utils.ogm().save(entity);
+                Utils.store().dropSession(getSession().getId());
                 isNew = false;
                 isBad = false;
             } catch (Throwable e) {

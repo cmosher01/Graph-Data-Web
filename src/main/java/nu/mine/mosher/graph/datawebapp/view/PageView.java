@@ -16,7 +16,7 @@ public class PageView extends BasePage {
     private final Serializable entity;
 
     public PageView(Class cls, Long id, UUID uuid) {
-        this.entity = Utils.same(uuid, ogm().load(cls,Objects.requireNonNull(id)));
+        this.entity = Utils.same(uuid, Utils.ogm().load(cls,Objects.requireNonNull(id)));
         init();
     }
 
@@ -46,7 +46,7 @@ public class PageView extends BasePage {
             }
         });
 
-        add(new ListView<>("properties", props().properties(entity.getClass())) {
+        add(new ListView<>("properties", Utils.props().properties(entity.getClass())) {
             @Override
             protected void populateItem(final ListItem<Props.Prop> item) {
                 final String nameProperty = item.getModelObject().name;
@@ -59,7 +59,7 @@ public class PageView extends BasePage {
 
 
 
-        add(new ListView<>("refsMultiple", props().refsMultiple(entity.getClass())) {
+        add(new ListView<>("refsMultiple", Utils.props().refsMultiple(entity.getClass())) {
             @Override
             protected void populateItem(final ListItem<Props.Ref> item) {
                 final Props.Ref ref = item.getModelObject();
@@ -103,7 +103,7 @@ public class PageView extends BasePage {
 
 
 
-        add(new ListView<>("refsSingular", props().refsSingular(entity.getClass())) {
+        add(new ListView<>("refsSingular", Utils.props().refsSingular(entity.getClass())) {
             @Override
             protected void populateItem(final ListItem<Props.Ref> item) {
                 final Props.Ref ref = item.getModelObject();
@@ -133,7 +133,7 @@ public class PageView extends BasePage {
         add(new Link<Void>("delete") {
             @Override
             public void onClick() {
-                ogm().delete(entity);
+                Utils.ogm().delete(entity);
                 setResponsePage(new PageList(entity.getClass()));
             }
         });
@@ -155,7 +155,7 @@ public class PageView extends BasePage {
                 new PropertyModel<>(entity, ref.name).setObject(null);
             }
             try {
-                ogm().save(entity);
+                Utils.ogm().save(entity);
                 setResponsePage(new PageView(entity.getClass(), Utils.id(entity), Utils.uuid(entity)));
             } catch (Throwable e) {
                 e.printStackTrace();
