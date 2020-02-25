@@ -13,4 +13,5 @@
     <entry key="remove">unlink</entry>
     <entry key="cancel">cancel</entry>
     <entry key="empty">[none]</entry>
+    <entry key="endOfList">—[end of list]—</entry>
 </properties>
