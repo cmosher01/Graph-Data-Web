@@ -1,7 +1,10 @@
 apply plugin: WarPlugin
+apply plugin: JavaLibraryPlugin
 
-group = 'nu.mine.mosher'
+group = 'nu.mine.mosher.graph'
 
 java {
     sourceCompatibility = JavaVersion.VERSION_11
 }
+
+tasks.assemble.dependsOn tasks.jar

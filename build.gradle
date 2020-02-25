@@ -9,3 +9,6 @@ def inc(module) {
 inc('version')
 inc('project')
 inc('dependencies')
+inc('srcjar')
+inc('maven')
+inc('bintray')

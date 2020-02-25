@@ -3,18 +3,24 @@ repositories {
     mavenCentral()
 }
 
+ext {
+    vNeo4j = '[3,4)'
+}
+
 dependencies {
     implementation group: 'org.apache.wicket', name: 'wicket', version: 'latest.integration', {
         exclude group: 'org.junit.jupiter', module: 'junit-jupiter-engine'
     }
-    implementation group: 'org.neo4j', name: 'neo4j', version: '3.+'
-    implementation group: 'org.neo4j', name: 'neo4j-ogm-core', version: '3.+'
-    implementation group: 'org.neo4j', name: 'neo4j-ogm-embedded-driver', version: '3.+'
-    implementation group: 'org.neo4j', name: 'neo4j-ogm-embedded-native-types', version: '3.+'
-    implementation group: 'org.neo4j', name: 'neo4j-ogm-bolt-driver', version: '3.+'
-    implementation group: 'org.neo4j', name: 'neo4j-ogm-bolt-native-types', version: '3.+'
+    implementation group: 'org.neo4j', name: 'neo4j', version: vNeo4j
+    implementation group: 'org.neo4j', name: 'neo4j-ogm-core', version: vNeo4j
+    implementation group: 'org.neo4j', name: 'neo4j-ogm-embedded-driver', version: vNeo4j
+    implementation group: 'org.neo4j', name: 'neo4j-ogm-embedded-native-types', version: vNeo4j
+    implementation group: 'org.neo4j', name: 'neo4j-ogm-bolt-driver', version: vNeo4j
+    implementation group: 'org.neo4j', name: 'neo4j-ogm-bolt-native-types', version: vNeo4j
 
     implementation group: 'com.github.ben-manes.caffeine', name: 'caffeine', version: 'latest.release'
+
+    implementation group: 'org.slf4j', name: 'slf4j-api', version: 'latest.integration'
 
     runtime group: 'org.slf4j', name: 'slf4j-simple', version: 'latest.integration'
 }
