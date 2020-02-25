@@ -21,8 +21,8 @@ task generateBintrayConfigFile {
             version: [name: project.version],
             files: [
                 [
-                    includePattern: "${project.buildDir}/libs/(.*)",
-                    uploadPattern: "${artPath}/\$1"
+                    includePattern: "${project.buildDir}/libs/(.*).jar",
+                    uploadPattern: "${artPath}/\$1.jar"
                 ], [
                     includePattern: "${project.buildDir}/publications/maven/pom-default.xml",
                     uploadPattern: "${artPath}/${project.name}-${project.version}.pom"
