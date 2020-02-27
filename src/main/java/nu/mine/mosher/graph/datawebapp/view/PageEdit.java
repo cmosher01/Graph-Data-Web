@@ -12,7 +12,7 @@ import java.io.Serializable;
 import java.util.*;
 
 @SuppressWarnings({"rawtypes", "unchecked"})
-public class PageEdit extends BasePage {
+public class PageEdit extends SecurePage {
     private final Serializable entity;
     private boolean isNew;
     private boolean isBad;
@@ -72,7 +72,7 @@ public class PageEdit extends BasePage {
             isBad = true;
             try {
                 Utils.ogm().save(entity);
-                Utils.store().dropSession(getSession().getId());
+                Utils.store().dropSession();
                 isNew = false;
                 isBad = false;
             } catch (Throwable e) {

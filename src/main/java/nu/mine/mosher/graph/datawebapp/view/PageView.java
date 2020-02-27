@@ -12,7 +12,7 @@ import java.io.Serializable;
 import java.util.*;
 
 @SuppressWarnings({"rawtypes", "unchecked"})
-public class PageView extends BasePage {
+public class PageView extends SecurePage {
     private final Serializable entity;
 
     public PageView(Class cls, Long id, UUID uuid) {

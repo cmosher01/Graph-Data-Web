@@ -11,6 +11,8 @@ dependencies {
     implementation group: 'org.apache.wicket', name: 'wicket', version: 'latest.integration', {
         exclude group: 'org.junit.jupiter', module: 'junit-jupiter-engine'
     }
+    implementation group: 'org.apache.wicket', name: 'wicket-auth-roles', version: 'latest.integration'
+
     implementation group: 'org.neo4j', name: 'neo4j', version: vNeo4j
     implementation group: 'org.neo4j', name: 'neo4j-ogm-core', version: vNeo4j
     implementation group: 'org.neo4j', name: 'neo4j-ogm-embedded-driver', version: vNeo4j

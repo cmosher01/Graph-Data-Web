@@ -1,7 +1,6 @@
 package nu.mine.mosher.graph.datawebapp.view;
 
 import nu.mine.mosher.graph.datawebapp.util.*;
-import org.apache.wicket.Session;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.markup.html.list.*;
@@ -11,7 +10,7 @@ import java.io.Serializable;
 import java.util.*;
 
 @SuppressWarnings({"unchecked", "rawtypes"})
-public class PageChoose extends BasePage {
+public class PageChoose extends SecurePage {
     private final Serializable parent;
     private final Props.Ref ref;
 
@@ -31,7 +30,7 @@ public class PageChoose extends BasePage {
 
     private static List<Serializable> recent(Class cls) {
         // TODO MRU search
-        final org.neo4j.ogm.session.Session ogm = Utils.store().getSession(Session.get().getId());
+        final org.neo4j.ogm.session.Session ogm = Utils.ogm();
         return Collections.list(Collections.enumeration(ogm.loadAll(cls)));
     }
 
@@ -62,7 +61,7 @@ public class PageChoose extends BasePage {
                 }
                 try {
                     Utils.ogm().save(Utils.resetEntity(parent));
-                    Utils.store().dropSession(getSession().getId());
+                    Utils.store().dropSession();
                     setResponsePage(new PageView(parent.getClass(), Utils.id(parent), Utils.uuid(parent)));
                 } catch (Throwable e) {
                     e.printStackTrace();

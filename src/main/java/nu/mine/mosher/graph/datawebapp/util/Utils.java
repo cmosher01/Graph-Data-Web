@@ -3,9 +3,10 @@ package nu.mine.mosher.graph.datawebapp.util;
 
 import nu.mine.mosher.graph.datawebapp.GraphDataWebApp;
 import nu.mine.mosher.graph.datawebapp.store.Store;
-import org.apache.wicket.*;
+import org.apache.wicket.Application;
 import org.apache.wicket.model.PropertyModel;
 import org.neo4j.ogm.exception.OptimisticLockingException;
+import org.neo4j.ogm.metadata.MetaData;
 
 import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
@@ -20,6 +21,10 @@ public final class Utils {
         } catch (final Throwable e) {
             throw new IllegalStateException(e);
         }
+    }
+
+    public static MetaData metaData() {
+        return store().getSession().metadata();
     }
 
     public static String str(final Object object) {
@@ -66,7 +71,7 @@ public final class Utils {
     }
 
     public static org.neo4j.ogm.session.Session ogm() {
-        return store().getSession(Session.get().getId());
+        return store().getSession().session();
     }
 
     public static GraphDataWebApp app() {

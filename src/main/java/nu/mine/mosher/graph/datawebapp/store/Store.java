@@ -1,88 +1,52 @@
 package nu.mine.mosher.graph.datawebapp.store;
 
 import com.github.benmanes.caffeine.cache.*;
-import nu.mine.mosher.graph.datawebapp.util.GraphEntity;
-import org.apache.wicket.model.PropertyModel;
-import org.neo4j.graphdb.GraphDatabaseService;
-import org.neo4j.graphdb.factory.GraphDatabaseFactory;
-import org.neo4j.ogm.config.Configuration;
-import org.neo4j.ogm.drivers.embedded.driver.EmbeddedDriver;
+import nu.mine.mosher.graph.datawebapp.util.*;
+import org.apache.wicket.Session;
 import org.neo4j.ogm.metadata.ClassInfo;
-import org.neo4j.ogm.session.*;
-import org.neo4j.ogm.session.event.*;
+import org.slf4j.*;
 
-import java.io.File;
-import java.time.*;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.stream.Collectors;
 
 @SuppressWarnings("rawtypes")
-public class Store {
-    private final LoadingCache<String, Session> cacheSession;
-    private final SessionFactory factorySession;
+public class Store implements AutoCloseable {
+    private final Logger LOG = LoggerFactory.getLogger(Store.class);
 
-    public Store(final String bolt, final String username, final String password, final String... packages) {
-        this.factorySession = createSessionFactory(bolt, username, password, packages);
-        this.factorySession.register(new EventListenerAdapter() {
-            @Override
-            public void onPreSave(Event event) {
-                new PropertyModel<>(event.getObject(), "utcModified").setObject(ZonedDateTime.now(ZoneOffset.UTC));
-            }
-        });
+    private final Cache<String, Neo4jConnection> connections;
 
-        this.cacheSession = Caffeine.newBuilder()
-            .expireAfterWrite(1, TimeUnit.HOURS)
-            .build(key -> this.factorySession.openSession());
+    public Store() {
+        this.connections =
+            Caffeine.
+            newBuilder().
+            removalListener((String id, Neo4jConnection conn, RemovalCause cause) -> conn.close()).
+            expireAfterWrite(1, TimeUnit.HOURS).
+            build();
 
         Scheduler.systemScheduler().schedule(
             ForkJoinPool.commonPool(),
-            this.cacheSession::cleanUp,
+            this.connections::cleanUp,
             5, TimeUnit.MINUTES);
     }
 
-    private static SessionFactory createSessionFactory(final String bolt, final String username, final String password, final String... packages) {
-        final Configuration.Builder configBase = new Configuration.Builder().
-            useNativeTypes().
-            strictQuerying();
-
-        final SessionFactory sf;
-        if (Objects.nonNull(bolt) && !bolt.isEmpty()) {
-            final Configuration config =
-                configBase.
-                uri(bolt).
-                credentials(username, password).
-                build();
-            sf = new SessionFactory(config, packages);
-        } else {
-            final GraphDatabaseService db =
-                new GraphDatabaseFactory().
-                newEmbeddedDatabaseBuilder(new File("database")).
-                newGraphDatabase();
-            final EmbeddedDriver driver = new EmbeddedDriver(db, configBase.build());
-            sf = new SessionFactory(driver, packages);
-        }
-        return sf;
-    }
-
     public boolean isEntity(final Class cls) {
-        return Objects.nonNull(this.factorySession.metaData().classInfo(cls));
+        return Objects.nonNull(Utils.metaData().classInfo(cls));
     }
 
     public boolean isRelationshipEntity(final Class cls) {
-        final ClassInfo info = this.factorySession.metaData().classInfo(cls);
+        final ClassInfo info = Utils.metaData().classInfo(cls);
         return Objects.nonNull(info) && info.isRelationshipEntity();
     }
 
     public boolean isNodeEntity(final Class cls) {
-        final ClassInfo info = this.factorySession.metaData().classInfo(cls);
+        final ClassInfo info = Utils.metaData().classInfo(cls);
         return Objects.nonNull(info) && !info.isRelationshipEntity();
     }
 
     public List<Class> entityClasses() {
         return
-            this.
-            factorySession.
+            Utils.
             metaData().
             persistentEntities().
             stream().
@@ -93,8 +57,7 @@ public class Store {
 
     public List<String> namesNodes() {
         return
-            this.
-            factorySession.
+            Utils.
             metaData().
             persistentEntities().
             stream().
@@ -105,8 +68,7 @@ public class Store {
 
     public List<String> namesRelationships() {
         return
-            this.
-            factorySession.
+            Utils.
             metaData().
             persistentEntities().
             stream().
@@ -115,23 +77,34 @@ public class Store {
             collect(Collectors.toUnmodifiableList());
     }
 
-//    private static final List<Filter> OPTIMIZE_CYPHER_QUERY = Collections.emptyList();
-//
-//    /**
-//     * Checks for existence of any entities of the given type in the database.
-//     * @param cls type of entity (node or relationship) to check
-//     * @return true if at least one node or relationship of type cls exists
-//     */
-//    public boolean any(final Class cls) {
-//        final Session session = this.factorySession.openSession();
-//        return session.count(cls, OPTIMIZE_CYPHER_QUERY) > 0;
-//    }
-
-    public Session getSession(final String id) {
-        return this.cacheSession.get(id);
+    public void createSession(final String bolt, final String username, final String password, final String... packages) {
+        final String id = Session.get().getId();
+        try {
+            this.connections.put(id, new Neo4jConnection(bolt, username, password, packages));
+        } catch (final RuntimeException cantConnect) {
+            LOG.warn("Cannot connect", cantConnect);
+        }
     }
 
-    public void dropSession(final String id) {
-        this.cacheSession.invalidate(id);
+    public Neo4jConnection getSession() {
+        final String id = Session.get().getId();
+        return Optional.ofNullable(this.connections.getIfPresent(id)).orElseThrow();
+    }
+
+    public boolean haveSession() {
+        final String id = Session.get().getId();
+        return Objects.nonNull(this.connections.getIfPresent(id));
+    }
+
+    public void dropSession() {
+        final String id = Session.get().getId();
+        this.connections.invalidate(id);
+    }
+
+    @Override
+    public void close() throws Exception {
+        this.connections.invalidateAll();
+        ForkJoinPool.commonPool().awaitTermination(7, TimeUnit.SECONDS);
+        this.connections.cleanUp();
     }
 }

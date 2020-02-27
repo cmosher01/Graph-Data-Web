@@ -1,7 +1,6 @@
 package nu.mine.mosher.graph.datawebapp.view;
 
 import nu.mine.mosher.graph.datawebapp.util.Utils;
-import org.apache.wicket.Session;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.*;
@@ -13,7 +12,7 @@ import java.io.Serializable;
 import java.util.*;
 
 @SuppressWarnings({"rawtypes", "unchecked"})
-public class PageList extends BasePage {
+public class PageList extends SecurePage {
     public PageList(final Class cls) {
         this(cls, "", 0, 50);
     }
@@ -142,7 +141,7 @@ public class PageList extends BasePage {
         }
 
         final Iterable<Serializable> resultset =
-            Utils.store().getSession(Session.get().getId()).query(
+            Utils.ogm().query(
                 cls,
                 getNodeOrRelationshipQuery(cls),
                 Map.of("anytext", anytext,

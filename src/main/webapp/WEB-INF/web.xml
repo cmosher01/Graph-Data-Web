@@ -38,23 +38,6 @@
             <!-- URL of stylesheet (optional) -->
             <param-value>https://mosher.mine.nu/uniwebfonts/test/test.css</param-value>
         </init-param>
-        <init-param>
-            <param-name>neo4j-bolt-url</param-name>
-            <!-- URL for bolt port on Neo4j server -->
-            <!-- If omitted, an embedded local database will we used instead -->
-            <!-- Example: bolt://localhost -->
-            <param-value><!-- bolt://localhost --></param-value>
-        </init-param>
-        <init-param>
-            <param-name>neo4j-username</param-name>
-            <!-- Username for bolt Neo4j connection -->
-            <param-value>neo4j</param-value>
-        </init-param>
-        <init-param>
-            <param-name>neo4j-password</param-name>
-            <!-- Password for bolt Neo4j connection -->
-            <param-value>neo4j</param-value>
-        </init-param>
     </filter>
 
     <filter-mapping>
