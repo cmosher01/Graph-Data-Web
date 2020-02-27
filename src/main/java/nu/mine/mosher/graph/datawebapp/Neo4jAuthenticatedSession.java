@@ -13,12 +13,10 @@ public class Neo4jAuthenticatedSession extends AuthenticatedWebSession {
 
     @Override
     protected boolean authenticate(final String username, final String password) {
-        System.out.println("authenticating user: "+username);
         if (Utils.store().haveSession()) {
             return true;
         }
 
-        System.out.println("connecting to "+boltUrl());
         Utils.store().createSession(boltUrl(), username, password, Utils.app().packages());
 
         return Utils.store().haveSession();

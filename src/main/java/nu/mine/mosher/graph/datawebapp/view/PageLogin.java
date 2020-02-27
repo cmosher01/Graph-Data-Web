@@ -17,18 +17,14 @@ public class PageLogin extends BasePage {
         final StatelessForm<PageLogin> form = new StatelessForm<>("form"){
             @Override
             protected void onSubmit() {
-                System.out.println("submitted");
                 if (Strings.isEmpty(username) || Strings.isEmpty(password)) {
                     return;
                 }
 
-                System.out.println("signing in...");
                 final boolean authResult = AuthenticatedWebSession.get().signIn(username, password);
 
                 if (authResult) {
-                    System.out.println("signed in.");
                     continueToOriginalDestination();
-                    System.out.println("to home page...");
                     setResponsePage(Application.get().getHomePage());
                 }
             }

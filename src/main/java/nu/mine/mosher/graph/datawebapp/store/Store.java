@@ -102,9 +102,14 @@ public class Store implements AutoCloseable {
     }
 
     @Override
-    public void close() throws Exception {
+    public void close() {
         this.connections.invalidateAll();
-        ForkJoinPool.commonPool().awaitTermination(7, TimeUnit.SECONDS);
+        try {
+            ForkJoinPool.commonPool().awaitTermination(7, TimeUnit.SECONDS);
+        } catch (final InterruptedException propagate) {
+            LOG.warn("interrupted", propagate);
+            Thread.currentThread().interrupt();
+        }
         this.connections.cleanUp();
     }
 }

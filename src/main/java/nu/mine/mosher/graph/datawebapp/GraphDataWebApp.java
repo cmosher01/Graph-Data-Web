@@ -31,6 +31,11 @@ public class GraphDataWebApp extends AuthenticatedWebApplication {
         this.stylesheet = Optional.ofNullable(getInitParameter("stylesheet")).orElse("");
     }
 
+    @Override
+    protected void onDestroy() {
+        System.out.println("onDestroy");
+        this.store.close();
+    }
 
     @Override
     protected IConverterLocator newConverterLocator() {
