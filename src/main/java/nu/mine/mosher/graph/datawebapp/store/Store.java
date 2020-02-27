@@ -34,11 +34,6 @@ public class Store implements AutoCloseable {
         return Objects.nonNull(Utils.metaData().classInfo(cls));
     }
 
-    public boolean isRelationshipEntity(final Class cls) {
-        final ClassInfo info = Utils.metaData().classInfo(cls);
-        return Objects.nonNull(info) && info.isRelationshipEntity();
-    }
-
     public boolean isNodeEntity(final Class cls) {
         final ClassInfo info = Utils.metaData().classInfo(cls);
         return Objects.nonNull(info) && !info.isRelationshipEntity();
@@ -55,27 +50,6 @@ public class Store implements AutoCloseable {
             collect(Collectors.toUnmodifiableList());
     }
 
-    public List<String> namesNodes() {
-        return
-            Utils.
-            metaData().
-            persistentEntities().
-            stream().
-            filter(ci -> isNodeEntity(ci.getUnderlyingClass())).
-            map(ClassInfo::neo4jName).
-            collect(Collectors.toUnmodifiableList());
-    }
-
-    public List<String> namesRelationships() {
-        return
-            Utils.
-            metaData().
-            persistentEntities().
-            stream().
-            filter(ci -> isRelationshipEntity(ci.getUnderlyingClass())).
-            map(ClassInfo::neo4jName).
-            collect(Collectors.toUnmodifiableList());
-    }
 
     public void createSession(final String bolt, final String username, final String password, final String... packages) {
         final String id = Session.get().getId();

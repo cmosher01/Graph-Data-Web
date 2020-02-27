@@ -2,12 +2,14 @@ package nu.mine.mosher.graph.datawebapp.store;
 
 import org.apache.wicket.model.PropertyModel;
 import org.neo4j.ogm.config.Configuration;
+import org.neo4j.ogm.metadata.ClassInfo;
 import org.neo4j.ogm.metadata.MetaData;
 import org.neo4j.ogm.session.*;
 import org.neo4j.ogm.session.event.*;
 
 import java.time.*;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static nu.mine.mosher.graph.datawebapp.util.Utils.*;
 
@@ -46,10 +48,6 @@ public class Neo4jConnection implements AutoCloseable {
         this.factory.close();
     }
 
-    public SessionFactory factory() {
-        return this.factory;
-    }
-
     public Session session() {
         return this.session;
     }
@@ -65,12 +63,12 @@ public class Neo4jConnection implements AutoCloseable {
 
         if (missing("fulltextNode")) {
             final String queryNod = "CALL db.index.fulltext.createNodeIndex(\"fulltextNode\", $entities, $properties)";
-            this.session.query(void.class, queryNod, Map.of("entities", store().namesNodes(), "properties", idxProperties));
+            this.session.query(void.class, queryNod, Map.of("entities", namesNodes(), "properties", idxProperties));
         }
 
         if (missing("fulltextRelationship")) {
             final String queryRel = "CALL db.index.fulltext.createRelationshipIndex(\"fulltextRelationship\", $entities, $properties)";
-            this.session.query(void.class, queryRel, Map.of("entities", store().namesRelationships(), "properties", idxProperties));
+            this.session.query(void.class, queryRel, Map.of("entities", namesRelationships(), "properties", idxProperties));
         }
     }
 
@@ -79,5 +77,41 @@ public class Neo4jConnection implements AutoCloseable {
         final Iterable<Integer> result = this.session.query(int.class, query, Map.of("name", name));
         final int count = result.iterator().next();
         return count == 0;
+    }
+
+    public List<String> namesNodes() {
+        return
+            this.
+            factory.
+            metaData().
+            persistentEntities().
+            stream().
+            filter(ci -> isNodeEntity(ci.getUnderlyingClass())).
+            map(ClassInfo::neo4jName).
+            filter(Objects::nonNull).
+            collect(Collectors.toUnmodifiableList());
+    }
+
+    public List<String> namesRelationships() {
+        return
+            this.
+            factory.
+            metaData().
+            persistentEntities().
+            stream().
+            filter(ci -> isRelationshipEntity(ci.getUnderlyingClass())).
+            map(ClassInfo::neo4jName).
+            filter(Objects::nonNull).
+            collect(Collectors.toUnmodifiableList());
+    }
+
+    public boolean isRelationshipEntity(final Class cls) {
+        final ClassInfo info = this.factory.metaData().classInfo(cls);
+        return Objects.nonNull(info) && info.isRelationshipEntity();
+    }
+
+    public boolean isNodeEntity(final Class cls) {
+        final ClassInfo info = this.factory.metaData().classInfo(cls);
+        return Objects.nonNull(info) && !info.isRelationshipEntity();
     }
 }
