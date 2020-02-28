@@ -1,0 +1,18 @@
+---
+version: "3.7"
+
+volumes:
+  db: # this stores the neo4j database
+
+services:
+
+  neo4j:
+    image: neo4j:3.5
+    volumes:
+      - "db:/data"
+      - "./imdb:/imdb:ro"
+    user: root
+    entrypoint:
+      - /bin/bash
+    command:
+      - /imdb/imdb.sh

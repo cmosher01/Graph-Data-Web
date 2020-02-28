@@ -1,16 +1,14 @@
-#!/bin/sh
+#!/bin/bash
 
-if [ "$1" != -f ] ; then
-    echo "usage: $0 -f"
-    echo "This downloads IMDB datasets and imports into neo4j."
-    echo "Before running this script:"
-    echo "  1. stop neo4j server"
-    echo "  2. rm -R the entire neo4j database (e.g., /var/lib/neo4j/data/databases/graph.db )"
-    echo "You may need SUDO for these commands, and for running this script"
-    echo "After running: sudo chown -R neo4j: /var/lib/neo4j/data/databases/graph.db"
+set -e
+set -u
+set -o pipefail
 
-    exit
-fi
+p=/imdb
+
+cd /tmp
+
+apt-get update && apt-get install -y python3 curl
 
 get() {
     echo "$1..."
@@ -23,10 +21,21 @@ get() {
         cat $1.tsv.gz | gunzip -c >$1.tsv
     fi
     if [ ! -e $2.tsv ] ; then
-        cat $1.tsv | awk -c -f $2.awk | python3 add_uuid.py >$2.tsv
+        cat $1.tsv | awk -f $p/$2.awk | python3 $p/add_uuid.py >$2.tsv
     fi
 }
 
 get name.basics name
 get title.basics title
 get title.principals principal
+
+neo4j-admin import \
+    --delimiter='\09' \
+    --quote=\| \
+    --ignore-extra-columns=true \
+    --ignore-missing-nodes=true \
+    --nodes:Person=$p/name_head.tsv,name.tsv \
+    --nodes:Movie=$p/title_head.tsv,title.tsv \
+    --relationships:HAD_ROLE_IN=$p/principal_head.tsv,principal.tsv
+
+chown -R neo4j: /data/databases
