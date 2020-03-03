@@ -8,12 +8,19 @@ import org.apache.wicket.*;
 import org.apache.wicket.authroles.authentication.*;
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.util.convert.converter.ZonedDateTimeConverter;
+import org.slf4j.bridge.SLF4JBridgeHandler;
 
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Optional;
 
 public class GraphDataWebApp extends AuthenticatedWebApplication {
+    static {
+        SLF4JBridgeHandler.removeHandlersForRootLogger();
+        SLF4JBridgeHandler.install();
+        java.util.logging.Logger.getLogger("").setLevel(java.util.logging.Level.FINEST);
+    }
+
     private String csvPackageNames;
     private Store store;
     private Props props;
@@ -82,7 +89,7 @@ public class GraphDataWebApp extends AuthenticatedWebApplication {
         return this.stylesheet;
     }
 
-    public String packages() {
-        return this.csvPackageNames;
+    public String[] packages() {
+        return this.csvPackageNames.split(",");
     }
 }

@@ -23,6 +23,5 @@ dependencies {
     implementation group: 'com.github.ben-manes.caffeine', name: 'caffeine', version: 'latest.release'
 
     implementation group: 'org.slf4j', name: 'slf4j-api', version: 'latest.integration'
-
-    runtime group: 'org.slf4j', name: 'slf4j-simple', version: 'latest.integration'
+    implementation group: 'org.slf4j', name: 'jul-to-slf4j', version: 'latest.release'
 }
