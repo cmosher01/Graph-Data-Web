@@ -22,12 +22,8 @@ public class Store implements AutoCloseable {
             newBuilder().
             removalListener((String id, Neo4jConnection conn, RemovalCause cause) -> conn.close()).
             expireAfterWrite(1, TimeUnit.HOURS).
+            scheduler(Scheduler.systemScheduler()).
             build();
-
-        Scheduler.systemScheduler().schedule(
-            ForkJoinPool.commonPool(),
-            this.connections::cleanUp,
-            5, TimeUnit.MINUTES);
     }
 
     public boolean isEntity(final Class cls) {
