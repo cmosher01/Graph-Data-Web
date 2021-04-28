@@ -1,3 +1,8 @@
+# ARCHIVED
+This project is obsolete. It has been replaced by
+a desktop application version:
+[digred](https://www.github.com/cmosher01/digred)
+
 # Graph-Data-Web
 
 Copyright © 2019–2020, Christopher Alan Mosher, Shelton, Connecticut, USA, <cmosher01@gmail.com>.
